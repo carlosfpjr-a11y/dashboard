@@ -465,7 +465,7 @@ async function fetchFacebook(dateStart, dateEnd) {
 //  YAMPI API  (tenta múltiplos proxies)
 // ══════════════════════════════════════════════
 async function fetchYampi(dateStart, dateEnd) {
-  const targetUrl = `https://api.yampi.io/v2/${CONFIG.yampi.alias}/orders?include=items,customer&limit=50&page=1&date_start=${dateStart}&date_end=${dateEnd}`;
+  const targetUrl = `https://api.dooki.com.br/v2/${CONFIG.yampi.alias}/orders?include=items,customer&limit=50&page=1&date_start=${dateStart}&date_end=${dateEnd}`;
 
   const proxies = [
     url => url, // direto
