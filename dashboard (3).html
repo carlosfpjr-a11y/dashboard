@@ -465,32 +465,35 @@ async function fetchFacebook(dateStart, dateEnd) {
 //  YAMPI API  (tenta múltiplos proxies)
 // ══════════════════════════════════════════════
 async function fetchYampi(dateStart, dateEnd) {
-  const targetUrl = `https://api.dooki.com.br/v2/${CONFIG.yampi.alias}/orders?include=items,customer&limit=50&page=1&date_start=${dateStart}&date_end=${dateEnd}`;
+  const targetUrl = `https://api.dooki.com.br/v2/${CONFIG.yampi.alias}/orders?include=customer&limit=50&page=1&date_start=${dateStart}&date_end=${dateEnd}&skipCache=true`;
+
+  const headers = {
+    'User-Token': CONFIG.yampi.token,
+    'User-Secret-Key': CONFIG.yampi.secret,
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  };
 
   const proxies = [
-    url => url, // direto
-    url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-    url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-    url => `https://proxy.cors.sh/${url}`,
+    url => ({ url, headers }),
+    url => ({ url: `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`, headers }),
+    url => ({ url: `https://corsproxy.io/?${encodeURIComponent(url)}`, headers: { ...headers, 'x-requested-with': 'XMLHttpRequest' } }),
+    url => ({ url: `https://proxy.cors.sh/${url}`, headers: { ...headers, 'x-cors-api-key': 'temp_' } }),
   ];
 
-  for (const proxy of proxies) {
+  for (const buildProxy of proxies) {
     try {
-      const reqUrl = proxy(targetUrl);
-      const res = await fetch(reqUrl, {
-        headers: {
-          'User-Token': CONFIG.yampi.token,
-          'User-Secret-Key': CONFIG.yampi.secret,
-          'Accept': 'application/json',
-          'x-requested-with': 'XMLHttpRequest',
-        }
-      });
+      const { url: reqUrl, headers: reqHeaders } = buildProxy(targetUrl);
+      const res = await fetch(reqUrl, { headers: reqHeaders });
       if (!res.ok) continue;
-      const data = await res.json();
+      const raw = await res.json();
       // allorigins encapsula em .contents
-      const parsed = data.contents ? JSON.parse(data.contents) : data;
-      if (parsed.error) continue;
-      return parsed.data?.data || [];
+      const parsed = raw.contents ? JSON.parse(raw.contents) : raw;
+      if (parsed.error || parsed.message) continue;
+      // API Dooki: dados em parsed.data (array) com paginação em parsed.meta
+      const orders = parsed.data || parsed.data?.data || [];
+      if (Array.isArray(orders)) return orders;
+      continue;
     } catch (e) {
       continue;
     }
