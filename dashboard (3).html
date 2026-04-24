@@ -31,7 +31,6 @@
 
   .container { max-width: 860px; margin: 0 auto; }
 
-  /* HEADER */
   header {
     display: flex;
     justify-content: space-between;
@@ -99,7 +98,6 @@
   #btn-refresh:active { transform: scale(0.97); }
   #btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* STATUS BAR */
   #status-bar {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -127,7 +125,6 @@
 
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  /* KPI CARDS */
   .kpi-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -172,7 +169,6 @@
     margin-top: 4px;
   }
 
-  /* ROAS BIG CARD */
   .roas-card {
     background: var(--accent);
     color: #0a0c0b;
@@ -189,7 +185,6 @@
   .roas-card .roas-value { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 1px; line-height: 1; }
   .roas-card .roas-sub { font-size: 0.78rem; opacity: 0.65; margin-top: 4px; }
 
-  /* CAMPAIGNS TABLE */
   .section-title {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.4rem;
@@ -214,7 +209,7 @@
     transition: border-color 0.2s;
   }
 
-  .camp-row:hover { border-color: var(--border); border-color: #3a4a3c; }
+  .camp-row:hover { border-color: #3a4a3c; }
 
   .camp-name { font-size: 0.88rem; font-weight: 500; }
   .camp-name .camp-status { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
@@ -247,7 +242,6 @@
     transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
   }
 
-  /* ORDERS TABLE */
   .orders-table { width: 100%; border-collapse: collapse; }
   .orders-table th {
     text-align: left;
@@ -292,16 +286,10 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  .skeleton {
-    background: linear-gradient(90deg, var(--border) 25%, var(--surface) 50%, var(--border) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.2s infinite;
-    border-radius: 4px;
-    height: 1em;
-    display: inline-block;
-    width: 80px;
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
-  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 </style>
 </head>
 <body>
@@ -329,7 +317,6 @@
     <span id="status-text">Clique em ATUALIZAR para carregar os dados.</span>
   </div>
 
-  <!-- ROAS -->
   <div class="roas-card" id="roas-card">
     <div>
       <div class="roas-label">ROAS Geral</div>
@@ -342,7 +329,6 @@
     </svg>
   </div>
 
-  <!-- KPIs -->
   <div class="kpi-grid">
     <div class="kpi-card" style="animation-delay:0.05s">
       <div class="kpi-label">💸 Total Gasto (FB)</div>
@@ -366,13 +352,11 @@
     </div>
   </div>
 
-  <!-- CAMPAIGNS -->
   <div class="section-title">Campanhas Facebook</div>
   <div class="campaigns-list" id="campaigns-list">
     <div class="empty-state">Clique em ATUALIZAR para carregar as campanhas.</div>
   </div>
 
-  <!-- ORDERS -->
   <div class="section-title">Últimos Pedidos Yampi</div>
   <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:32px;">
     <table class="orders-table" id="orders-table">
@@ -394,28 +378,35 @@
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-//  CONFIGURAÇÕES
-// ══════════════════════════════════════════════
 const CONFIG = {
-  yampi: {
-    alias: 'facilita-bio2',
-    token: 'ou1Yohjm24iDbViMy1WCAikbb2FWhMatx9jzd0DT',
-    secret: 'sk_AjDMIFJ462XRtyRr2eqqt4eINVJcTH6sEPpOy',
-  },
   facebook: {
     token: 'EAAOCMdh5FYMBRbNuWmxOZCkuzFGmnmiAoieV9ptTle1pRCWELiGe3cv9jb9xpD57E62DPeo04hnMlfamUG1vXQyfq0NdjtyudiObxZCVSOgS1nZC1Vp0GptbTtdpPpwZAdaxMGa2YxpdmEe0ZC32If1gjrSn0R1KBPSth604WR1WkwvFLPlAK6DZCbzbGmAatW3AfZBC4XaXuJ19ZBPa',
     adAccountId: 'act_723175113800731',
+  },
+  sheet: {
+    id: '1MQoxtYfNbOhF9A2TaqKHC4f-ZiEeMs_8Ob-xOd-lYMQ'
   }
 };
 
-// ══════════════════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════════════════
-let USD_TO_BRL = 5.70; // fallback — será atualizado na hora
+let USD_TO_BRL = 5.70;
 
 const fmt = v => isNaN(v) ? '—' : Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const fmtNum = v => isNaN(v) ? '—' : Number(v).toLocaleString('pt-BR');
+
+function escapeHtml(text) {
+  return String(text || '').replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+  }[m]));
+}
+
+function normalizeText(text) {
+  return String(text || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/—/g, '-')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 function setStatus(msg, type = '') {
   document.getElementById('status-text').textContent = msg;
@@ -430,29 +421,20 @@ function setDates() {
   document.getElementById('date-start').value = firstDay.toISOString().split('T')[0];
 }
 
-// ══════════════════════════════════════════════
-//  CÂMBIO USD → BRL (tempo real)
-// ══════════════════════════════════════════════
 async function fetchExchangeRate() {
   try {
     const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const data = await res.json();
-    if (data.rates?.BRL) {
-      USD_TO_BRL = data.rates.BRL;
-      console.log('Câmbio atualizado: 1 USD =', USD_TO_BRL, 'BRL');
-    }
+    if (data.rates?.BRL) USD_TO_BRL = data.rates.BRL;
   } catch (e) {
-    // fallback mantém o valor padrão
-    console.warn('Câmbio não disponível, usando R$', USD_TO_BRL);
+    console.warn('Câmbio não disponível, usando fallback:', USD_TO_BRL);
   }
 }
 
-// ══════════════════════════════════════════════
-//  FACEBOOK ADS API
-// ══════════════════════════════════════════════
 async function fetchFacebook(dateStart, dateEnd) {
   const fields = 'campaign_name,spend,impressions,clicks,actions';
-  const url = `https://graph.facebook.com/v20.0/${CONFIG.facebook.adAccountId}/insights?fields=${fields}&time_range={"since":"${dateStart}","until":"${dateEnd}"}&level=campaign&limit=50&access_token=${CONFIG.facebook.token}`;
+  const timeRange = encodeURIComponent(JSON.stringify({ since: dateStart, until: dateEnd }));
+  const url = `https://graph.facebook.com/v20.0/${CONFIG.facebook.adAccountId}/insights?fields=${fields}&time_range=${timeRange}&level=campaign&limit=200&access_token=${CONFIG.facebook.token}`;
 
   const res = await fetch(url);
   const data = await res.json();
@@ -461,73 +443,108 @@ async function fetchFacebook(dateStart, dateEnd) {
   return data.data || [];
 }
 
-// ══════════════════════════════════════════════
-//  YAMPI API  (tenta múltiplos proxies)
-// ══════════════════════════════════════════════
+function parseGoogleDate(value) {
+  if (!value) return null;
+
+  if (value instanceof Date) return value;
+
+  const raw = String(value);
+
+  if (raw.includes('Date(')) {
+    const parts = raw.replace('Date(', '').replace(')', '').split(',').map(Number);
+    return new Date(parts[0], parts[1], parts[2], parts[3] || 0, parts[4] || 0, parts[5] || 0);
+  }
+
+  const d = new Date(raw);
+  return isNaN(d) ? null : d;
+}
+
 async function fetchYampi(dateStart, dateEnd) {
-  const SHEET_ID = '1MQoxtYfNbOhF9A2TaqKHC4f-ZiEeMs_8Ob-xOd-lYMQ';
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+  const url = `https://docs.google.com/spreadsheets/d/${CONFIG.sheet.id}/gviz/tq?tqx=out:json`;
 
   const res = await fetch(url);
   if (!res.ok) throw new Error('Planilha: erro ao carregar dados');
 
   const text = await res.text();
   const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
-  
-  const rows = json.table?.rows || [];
-  if (!rows.length) throw new Error('Planilha: sem dados');
 
+  const rows = json.table?.rows || [];
   const start = new Date(dateStart + 'T00:00:00');
-  const end   = new Date(dateEnd   + 'T23:59:59');
+  const end = new Date(dateEnd + 'T23:59:59');
   const orders = [];
 
   rows.forEach((row, i) => {
-    if (i === 0) return; // pula cabeçalho se houver
-    const cols = row.c;
-    if (!cols || !cols[0]?.v) return;
+    if (i === 0) return;
+    const cols = row.c || [];
+    if (!cols[0]?.v) return;
 
-    const id           = String(cols[0]?.v || '');
-    const customer     = String(cols[2]?.v || '');
-    const total        = parseFloat(String(cols[3]?.v || '0').replace(',', '.')) || 0;
-    const status       = String(cols[4]?.v || '');
-    const utm_campaign = String(cols[5]?.v || '');
-    const utm_source   = String(cols[6]?.v || '');
-    const payment      = String(cols[7]?.v || '');
+    const rawDate = cols[1]?.v || cols[1]?.f || '';
+    const orderDate = parseGoogleDate(rawDate);
 
-    // Tenta parsear a data de várias formas
-    let orderDate = null;
-    const rawDate = cols[1]?.v;
-    if (rawDate) {
-      if (typeof rawDate === 'string' && rawDate.includes('Date(')) {
-        const parts = rawDate.replace('Date(','').replace(')','').split(',').map(Number);
-        orderDate = new Date(parts[0], parts[1], parts[2]);
-      } else if (typeof rawDate === 'string') {
-        orderDate = new Date(rawDate.substring(0, 10));
-      } else {
-        orderDate = new Date(rawDate);
-      }
-    }
+    if (orderDate && (orderDate < start || orderDate > end)) return;
 
-    const inRange = !orderDate || isNaN(orderDate) || (orderDate >= start && orderDate <= end);
-    if (inRange) {
-      orders.push({ id, created_at: rawDate, customer, total, status, utm_campaign, utm_source, payment });
-    }
+    orders.push({
+      id: String(cols[0]?.v || ''),
+      created_at: rawDate,
+      customer: String(cols[2]?.v || ''),
+      total: parseFloat(String(cols[3]?.v || '0').replace(',', '.')) || 0,
+      status: String(cols[4]?.v || ''),
+      utm_campaign: String(cols[5]?.v || ''),
+      utm_source: String(cols[6]?.v || ''),
+      payment: String(cols[7]?.v || '')
+    });
   });
 
   return orders;
 }
 
-// ══════════════════════════════════════════════
-//  RENDER
-// ══════════════════════════════════════════════
+function isApprovedStatus(status) {
+  const approved = ['Pago', 'Entregue', 'Em transporte', 'approved', 'paid', 'processing', 'shipped', 'delivered'];
+  return approved.includes(String(status || '').trim());
+}
+
+function buildRevenueByCampaign(yampiOrders) {
+  const revenueMap = {};
+  const ordersMap = {};
+
+  yampiOrders
+    .filter(o => isApprovedStatus(o.status))
+    .forEach(o => {
+      const key = normalizeText(o.utm_campaign || 'Sem campanha');
+      if (!revenueMap[key]) revenueMap[key] = 0;
+      if (!ordersMap[key]) ordersMap[key] = 0;
+      revenueMap[key] += parseFloat(o.total || 0);
+      ordersMap[key] += 1;
+    });
+
+  return { revenueMap, ordersMap };
+}
+
+function findRevenueForCampaign(campaignName, revenueMap, ordersMap) {
+  const key = normalizeText(campaignName);
+
+  if (revenueMap[key] !== undefined) {
+    return { revenue: revenueMap[key], orders: ordersMap[key] || 0 };
+  }
+
+  let bestKey = null;
+
+  Object.keys(revenueMap).forEach(k => {
+    if (!bestKey && (k.includes(key) || key.includes(k))) bestKey = k;
+  });
+
+  if (bestKey) {
+    return { revenue: revenueMap[bestKey], orders: ordersMap[bestKey] || 0 };
+  }
+
+  return { revenue: 0, orders: 0 };
+}
+
 function renderKPIs(fbData, yampiOrders) {
-  // Facebook totals — converte USD → BRL
   const totalSpentUSD = fbData.reduce((s, c) => s + parseFloat(c.spend || 0), 0);
   const totalSpent = totalSpentUSD * USD_TO_BRL;
 
-  // Yampi totals — only approved/paid
-  const approvedStatuses = ['Pago', 'Entregue', 'Em transporte', 'approved', 'paid', 'processing', 'shipped', 'delivered'];
-  const approvedOrders = yampiOrders.filter(o => approvedStatuses.includes(o.status || o.status?.value || ''));
+  const approvedOrders = yampiOrders.filter(o => isApprovedStatus(o.status));
   const totalRevenue = approvedOrders.reduce((s, o) => s + parseFloat(o.total || 0), 0);
   const totalOrders = approvedOrders.length;
   const profit = totalRevenue - totalSpent;
@@ -536,6 +553,7 @@ function renderKPIs(fbData, yampiOrders) {
   document.getElementById('kpi-spent').textContent = fmt(totalSpent);
   document.getElementById('kpi-spent').title = `USD $${totalSpentUSD.toFixed(2)} × R$${USD_TO_BRL.toFixed(2)}`;
   document.querySelector('#kpi-spent + .kpi-sub').textContent = `US$ ${totalSpentUSD.toFixed(2)} × R$ ${USD_TO_BRL.toFixed(2)}/dólar`;
+
   document.getElementById('kpi-revenue').textContent = fmt(totalRevenue);
   document.getElementById('kpi-orders').textContent = fmtNum(totalOrders);
   document.getElementById('kpi-profit').textContent = fmt(profit);
@@ -549,35 +567,44 @@ function renderKPIs(fbData, yampiOrders) {
   return { totalSpent, totalRevenue, totalOrders, profit, roas };
 }
 
-function renderCampaigns(fbData) {
+function renderCampaigns(fbData, yampiOrders) {
   const container = document.getElementById('campaigns-list');
+  const { revenueMap, ordersMap } = buildRevenueByCampaign(yampiOrders);
+
   if (!fbData.length) {
     container.innerHTML = '<div class="empty-state">Nenhuma campanha encontrada no período.</div>';
     return;
   }
 
-  const maxSpend = Math.max(...fbData.map(c => parseFloat(c.spend || 0)));
+  const maxSpendBRL = Math.max(...fbData.map(c => parseFloat(c.spend || 0) * USD_TO_BRL), 1);
   container.innerHTML = '';
 
   fbData
     .sort((a, b) => parseFloat(b.spend || 0) - parseFloat(a.spend || 0))
     .forEach((c, i) => {
       const spent = parseFloat(c.spend || 0) * USD_TO_BRL;
-      const pct = maxSpend > 0 ? (spent / maxSpend * 100).toFixed(1) : 0;
       const clicks = parseInt(c.clicks || 0);
       const impressions = parseInt(c.impressions || 0);
+      const pct = spent > 0 ? (spent / maxSpendBRL * 100).toFixed(1) : 0;
+
+      const found = findRevenueForCampaign(c.campaign_name, revenueMap, ordersMap);
+      const revenue = found.revenue;
+      const orders = found.orders;
+      const roas = spent > 0 ? revenue / spent : 0;
+
+      const roasColor = roas >= 2 ? 'var(--green)' : (roas > 0 ? 'var(--accent)' : 'var(--muted)');
 
       const div = document.createElement('div');
       div.className = 'camp-row';
       div.style.animationDelay = (i * 0.06) + 's';
       div.innerHTML = `
         <div class="camp-name">
-          ${c.campaign_name}
-          <div class="camp-status">${fmtNum(impressions)} impressões · ${fmtNum(clicks)} cliques</div>
+          ${escapeHtml(c.campaign_name)}
+          <div class="camp-status">${fmtNum(impressions)} impressões · ${fmtNum(clicks)} cliques · ${orders} pedidos</div>
         </div>
         <div class="camp-spent">${fmt(spent)}</div>
-        <div class="camp-revenue" title="Receita não disponível por campanha sem pixel">—</div>
-        <div class="camp-roas" style="color:var(--muted)">—</div>
+        <div class="camp-revenue">${revenue > 0 ? fmt(revenue) : '—'}</div>
+        <div class="camp-roas" style="color:${roasColor}">${roas > 0 ? roas.toFixed(2) + 'x' : '—'}</div>
         <div class="camp-bar-row"><div class="camp-bar-fill" style="width:0%" data-pct="${pct}"></div></div>
       `;
       container.appendChild(div);
@@ -594,6 +621,13 @@ function renderCampaigns(fbData) {
 
 function statusBadge(status) {
   const map = {
+    'Pago': ['badge-green', 'Pago'],
+    'Entregue': ['badge-green', 'Entregue'],
+    'Em transporte': ['badge-yellow', 'Em transporte'],
+    'Cancelado': ['badge-red', 'Cancelado'],
+    'Reembolsado': ['badge-red', 'Reembolsado'],
+    'Troca/Devolução': ['badge-red', 'Troca/Devolução'],
+    'Aguardando pagamento': ['badge-gray', 'Aguardando'],
     approved: ['badge-green', 'Aprovado'],
     paid: ['badge-green', 'Pago'],
     processing: ['badge-yellow', 'Processando'],
@@ -603,37 +637,32 @@ function statusBadge(status) {
     refunded: ['badge-red', 'Reembolsado'],
     pending: ['badge-gray', 'Pendente'],
   };
+
   const [cls, label] = map[status] || ['badge-gray', status || '—'];
-  return `<span class="badge ${cls}">${label}</span>`;
+  return `<span class="badge ${cls}">${escapeHtml(label)}</span>`;
 }
 
 function renderOrders(orders) {
   const tbody = document.getElementById('orders-body');
+
   if (!orders.length) {
     tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state">Nenhum pedido encontrado no período.</div></td></tr>';
     return;
   }
 
   tbody.innerHTML = orders.slice(0, 30).map(o => {
-    const name = o.customer || '—';
-    const utmCampaign = o.utm_campaign || '—';
-    const total = parseFloat(o.total || 0);
-    const status = o.status || '';
     return `
       <tr>
-        <td style="color:var(--muted);font-size:0.76rem">#${o.number || o.id}</td>
-        <td>${name}</td>
-        <td style="font-size:0.78rem;color:var(--muted)">${utmCampaign}</td>
-        <td style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--green)">${fmt(total)}</td>
-        <td>${statusBadge(status)}</td>
+        <td style="color:var(--muted);font-size:0.76rem">#${escapeHtml(o.id)}</td>
+        <td>${escapeHtml(o.customer || '—')}</td>
+        <td style="font-size:0.78rem;color:var(--muted)">${escapeHtml(o.utm_campaign || '—')}</td>
+        <td style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--green)">${fmt(parseFloat(o.total || 0))}</td>
+        <td>${statusBadge(o.status || '')}</td>
       </tr>
     `;
   }).join('');
 }
 
-// ══════════════════════════════════════════════
-//  MAIN LOAD
-// ══════════════════════════════════════════════
 async function loadAll() {
   const btn = document.getElementById('btn-refresh');
   const icon = document.getElementById('btn-icon');
@@ -652,27 +681,25 @@ async function loadAll() {
   setStatus('Buscando câmbio do dia...', 'loading');
   await fetchExchangeRate();
 
-  setStatus('Buscando dados do Facebook Ads...', 'loading');
-
   let fbData = [], yampiOrders = [];
   let errors = [];
 
   try {
+    setStatus('Buscando dados do Facebook Ads...', 'loading');
     fbData = await fetchFacebook(dateStart, dateEnd);
-    setStatus('Facebook OK. Buscando pedidos Yampi...', 'loading');
   } catch (e) {
     errors.push(e.message);
-    setStatus('Erro Facebook: ' + e.message, 'error');
   }
 
   try {
+    setStatus('Buscando pedidos Yampi pela planilha...', 'loading');
     yampiOrders = await fetchYampi(dateStart, dateEnd);
   } catch (e) {
     errors.push(e.message);
   }
 
   renderKPIs(fbData, yampiOrders);
-  renderCampaigns(fbData);
+  renderCampaigns(fbData, yampiOrders);
   renderOrders(yampiOrders);
 
   btn.disabled = false;
@@ -686,7 +713,6 @@ async function loadAll() {
   }
 }
 
-// Init
 setDates();
 </script>
 </body>
