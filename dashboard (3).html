@@ -1,693 +1,102 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — Facilita Bio</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #0a0c0b;
-    --surface: #131714;
-    --card: #181d19;
-    --border: #232a24;
-    --accent: #c6f135;
-    --green: #3cffa0;
-    --red: #ff5c5c;
-    --text: #e4ebe5;
-    --muted: #5a6b5d;
-    --muted2: #3a453c;
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    padding: 40px 24px 80px;
-  }
-
-  .container { max-width: 860px; margin: 0 auto; }
-
-  /* HEADER */
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 40px;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-
-  .logo-area { border-left: 3px solid var(--accent); padding-left: 16px; }
-
-  .logo-area h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(2.2rem, 5vw, 3.2rem);
-    letter-spacing: 2px;
-    line-height: 1;
-  }
-
-  .logo-area p { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
-
-  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-
-  .date-range {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 0.82rem;
-  }
-
-  .date-range input[type="date"] {
-    background: transparent;
-    border: none;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.82rem;
-    outline: none;
-    cursor: pointer;
-  }
-
-  .date-range input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
-
-  .date-range span { color: var(--muted); }
-
-  #btn-refresh {
-    background: var(--accent);
-    color: #0a0c0b;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  #btn-refresh:hover { opacity: 0.88; }
-  #btn-refresh:active { transform: scale(0.97); }
-  #btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  /* STATUS BAR */
-  #status-bar {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 18px;
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-bottom: 28px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 44px;
-    transition: all 0.3s;
-  }
-
-  .dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--muted2);
-    flex-shrink: 0;
-  }
-  .dot.loading { background: var(--accent); animation: pulse 1s infinite; }
-  .dot.ok { background: var(--green); }
-  .dot.error { background: var(--red); }
-
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  /* KPI CARDS */
-  .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 14px;
-    margin-bottom: 28px;
-  }
-
-  .kpi-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px 22px;
-    animation: fadeUp 0.4s ease both;
-    transition: border-color 0.2s;
-  }
-
-  .kpi-card:hover { border-color: var(--accent); }
-
-  .kpi-card .kpi-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-
-  .kpi-card .kpi-value {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.9rem;
-    letter-spacing: 0.5px;
-    line-height: 1;
-  }
-
-  .kpi-card .kpi-value.positive { color: var(--green); }
-  .kpi-card .kpi-value.negative { color: var(--red); }
-  .kpi-card .kpi-value.accent { color: var(--accent); }
-  .kpi-card .kpi-value.neutral { color: var(--text); }
-
-  .kpi-card .kpi-sub {
-    font-size: 0.72rem;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-
-  /* ROAS BIG CARD */
-  .roas-card {
-    background: var(--accent);
-    color: #0a0c0b;
-    border-radius: 12px;
-    padding: 22px 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 28px;
-    animation: fadeUp 0.3s ease both;
-  }
-
-  .roas-card .roas-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.65; }
-  .roas-card .roas-value { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 1px; line-height: 1; }
-  .roas-card .roas-sub { font-size: 0.78rem; opacity: 0.65; margin-top: 4px; }
-
-  /* CAMPAIGNS TABLE */
-  .section-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.4rem;
-    letter-spacing: 1.5px;
-    color: var(--muted);
-    margin-bottom: 14px;
-    text-transform: uppercase;
-  }
-
-  .campaigns-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
-
-  .camp-row {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 20px;
-    display: grid;
-    grid-template-columns: 1fr auto auto auto;
-    gap: 8px 20px;
-    align-items: center;
-    animation: fadeUp 0.4s ease both;
-    transition: border-color 0.2s;
-  }
-
-  .camp-row:hover { border-color: var(--border); border-color: #3a4a3c; }
-
-  .camp-name { font-size: 0.88rem; font-weight: 500; }
-  .camp-name .camp-status { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
-
-  .camp-spent { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: var(--red); }
-  .camp-revenue { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: var(--green); }
-  .camp-roas {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 4px 10px;
-    text-align: center;
-    min-width: 60px;
-  }
-
-  .camp-bar-row {
-    grid-column: 1 / -1;
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .camp-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    background: var(--accent);
-    transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
-  }
-
-  /* ORDERS TABLE */
-  .orders-table { width: 100%; border-collapse: collapse; }
-  .orders-table th {
-    text-align: left;
-    font-size: 0.68rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    padding: 10px 14px;
-    border-bottom: 1px solid var(--border);
-  }
-  .orders-table td {
-    padding: 12px 14px;
-    font-size: 0.84rem;
-    border-bottom: 1px solid var(--muted2);
-  }
-  .orders-table tr:last-child td { border-bottom: none; }
-  .orders-table tr:hover td { background: var(--surface); }
-
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 0.68rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .badge-green { background: rgba(60,255,160,0.12); color: var(--green); }
-  .badge-yellow { background: rgba(198,241,53,0.12); color: var(--accent); }
-  .badge-red { background: rgba(255,92,92,0.12); color: var(--red); }
-  .badge-gray { background: rgba(90,107,93,0.15); color: var(--muted); }
-
-  .empty-state {
-    text-align: center;
-    padding: 40px;
-    color: var(--muted);
-    font-size: 0.85rem;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .skeleton {
-    background: linear-gradient(90deg, var(--border) 25%, var(--surface) 50%, var(--border) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.2s infinite;
-    border-radius: 4px;
-    height: 1em;
-    display: inline-block;
-    width: 80px;
-  }
-  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-</style>
-</head>
-<body>
-<div class="container">
-
-  <header>
-    <div class="logo-area">
-      <h1>Facilita Bio</h1>
-      <p>Dashboard de Performance</p>
-    </div>
-    <div class="header-right">
-      <div class="date-range">
-        <input type="date" id="date-start">
-        <span>→</span>
-        <input type="date" id="date-end">
-      </div>
-      <button id="btn-refresh" onclick="loadAll()">
-        <span id="btn-icon">↻</span> ATUALIZAR
-      </button>
-    </div>
-  </header>
-
-  <div id="status-bar">
-    <div class="dot" id="status-dot"></div>
-    <span id="status-text">Clique em ATUALIZAR para carregar os dados.</span>
-  </div>
-
-  <!-- ROAS -->
-  <div class="roas-card" id="roas-card">
-    <div>
-      <div class="roas-label">ROAS Geral</div>
-      <div class="roas-value" id="roas-value">—</div>
-      <div class="roas-sub" id="roas-sub">Retorno sobre investimento em anúncios</div>
-    </div>
-    <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-      <circle cx="26" cy="26" r="24" stroke="#0a0c0b" stroke-width="2" opacity="0.2"/>
-      <path d="M16 26l8 8 12-16" stroke="#0a0c0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
-
-  <!-- KPIs -->
-  <div class="kpi-grid">
-    <div class="kpi-card" style="animation-delay:0.05s">
-      <div class="kpi-label">💸 Total Gasto (FB)</div>
-      <div class="kpi-value negative" id="kpi-spent">—</div>
-      <div class="kpi-sub">Investimento em anúncios</div>
-    </div>
-    <div class="kpi-card" style="animation-delay:0.1s">
-      <div class="kpi-label">🛒 Receita (Yampi)</div>
-      <div class="kpi-value positive" id="kpi-revenue">—</div>
-      <div class="kpi-sub">Pedidos aprovados</div>
-    </div>
-    <div class="kpi-card" style="animation-delay:0.15s">
-      <div class="kpi-label">📦 Pedidos</div>
-      <div class="kpi-value neutral" id="kpi-orders">—</div>
-      <div class="kpi-sub">No período</div>
-    </div>
-    <div class="kpi-card" style="animation-delay:0.2s">
-      <div class="kpi-label">💰 Lucro Estimado</div>
-      <div class="kpi-value accent" id="kpi-profit">—</div>
-      <div class="kpi-sub">Receita − Gasto</div>
-    </div>
-  </div>
-
-  <!-- CAMPAIGNS -->
-  <div class="section-title">Campanhas Facebook</div>
-  <div class="campaigns-list" id="campaigns-list">
-    <div class="empty-state">Clique em ATUALIZAR para carregar as campanhas.</div>
-  </div>
-
-  <!-- ORDERS -->
-  <div class="section-title">Últimos Pedidos Yampi</div>
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:32px;">
-    <table class="orders-table" id="orders-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Cliente</th>
-          <th>Campanha / UTM</th>
-          <th>Valor</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody id="orders-body">
-        <tr><td colspan="5"><div class="empty-state">Clique em ATUALIZAR para carregar os pedidos.</div></td></tr>
-      </tbody>
-    </table>
-  </div>
-
-</div>
-
 <script>
-// ══════════════════════════════════════════════
-//  CONFIGURAÇÕES
-// ══════════════════════════════════════════════
-const CONFIG = {
-  yampi: {
-    alias: 'facilita-bio2',
-    token: 'ou1Yohjm24iDbViMy1WCAikbb2FWhMatx9jzd0DT',
-    secret: 'sk_AjDMIFJ462XRtyRr2eqqt4eINVJcTH6sEPpOy',
-  },
-  facebook: {
-    token: 'EAAOCMdh5FYMBRbNuWmxOZCkuzFGmnmiAoieV9ptTle1pRCWELiGe3cv9jb9xpD57E62DPeo04hnMlfamUG1vXQyfq0NdjtyudiObxZCVSOgS1nZC1Vp0GptbTtdpPpwZAdaxMGa2YxpdmEe0ZC32If1gjrSn0R1KBPSth604WR1WkwvFLPlAK6DZCbzbGmAatW3AfZBC4XaXuJ19ZBPa',
-    adAccountId: 'act_723175113800731',
-  }
-};
+// CONFIG
+const SHEET_ID = '1MQoxtYfNbOhF9A2TaqKHC4f-ZiEeMs_8Ob-xOd-lYMQ';
 
-// ══════════════════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════════════════
-let USD_TO_BRL = 5.70; // fallback — será atualizado na hora
-
-const fmt = v => isNaN(v) ? '—' : Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-const fmtNum = v => isNaN(v) ? '—' : Number(v).toLocaleString('pt-BR');
-
-function setStatus(msg, type = '') {
-  document.getElementById('status-text').textContent = msg;
-  const dot = document.getElementById('status-dot');
-  dot.className = 'dot' + (type ? ' ' + type : '');
-}
-
-function setDates() {
-  const today = new Date();
-  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-  document.getElementById('date-end').value = today.toISOString().split('T')[0];
-  document.getElementById('date-start').value = firstDay.toISOString().split('T')[0];
-}
-
-// ══════════════════════════════════════════════
-//  CÂMBIO USD → BRL (tempo real)
-// ══════════════════════════════════════════════
-async function fetchExchangeRate() {
-  try {
-    const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-    const data = await res.json();
-    if (data.rates?.BRL) {
-      USD_TO_BRL = data.rates.BRL;
-      console.log('Câmbio atualizado: 1 USD =', USD_TO_BRL, 'BRL');
-    }
-  } catch (e) {
-    // fallback mantém o valor padrão
-    console.warn('Câmbio não disponível, usando R$', USD_TO_BRL);
-  }
-}
-
-// ══════════════════════════════════════════════
-//  FACEBOOK ADS API
-// ══════════════════════════════════════════════
-async function fetchFacebook(dateStart, dateEnd) {
-  const fields = 'campaign_name,spend,impressions,clicks,actions';
-  const url = `https://graph.facebook.com/v20.0/${CONFIG.facebook.adAccountId}/insights?fields=${fields}&time_range={"since":"${dateStart}","until":"${dateEnd}"}&level=campaign&limit=50&access_token=${CONFIG.facebook.token}`;
-
-  const res = await fetch(url);
-  const data = await res.json();
-
-  if (data.error) throw new Error('Facebook: ' + data.error.message);
-  return data.data || [];
-}
-
-// ══════════════════════════════════════════════
-//  YAMPI API  (tenta múltiplos proxies)
-// ══════════════════════════════════════════════
+// BUSCAR YAMPI (PLANILHA)
 async function fetchYampi(dateStart, dateEnd) {
-  const SHEET_ID = '1MQoxtYfNbOhF9A2TaqKHC4f-ZiEeMs_8Ob-xOd-lYMQ';
+
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
 
   const res = await fetch(url);
-  if (!res.ok) throw new Error('Planilha: erro ao carregar dados');
-
   const text = await res.text();
   const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
-  
-  const rows = json.table?.rows || [];
-  if (!rows.length) throw new Error('Planilha: sem dados');
+
+  const rows = json.table.rows || [];
 
   const start = new Date(dateStart + 'T00:00:00');
-  const end   = new Date(dateEnd   + 'T23:59:59');
+  const end   = new Date(dateEnd + 'T23:59:59');
+
   const orders = [];
 
   rows.forEach((row, i) => {
-    if (i === 0) return; // pula cabeçalho se houver
+
+    if (i === 0) return;
+
     const cols = row.c;
-    if (!cols || !cols[0]?.v) return;
+    if (!cols) return;
 
-    const id           = String(cols[0]?.v || '');
-    const customer     = String(cols[2]?.v || '');
-    const total        = parseFloat(String(cols[3]?.v || '0').replace(',', '.')) || 0;
-    const status       = String(cols[4]?.v || '');
-    const utm_campaign = String(cols[5]?.v || '');
-    const utm_source   = String(cols[6]?.v || '');
-    const payment      = String(cols[7]?.v || '');
+    const id       = cols[0]?.v || '';
+    const data     = cols[1]?.v || '';
+    const cliente  = cols[2]?.v || '';
+    const total    = parseFloat(cols[3]?.v || 0);
+    const status   = cols[4]?.v || '';
+    const utm      = cols[5]?.v || '';
+    const source   = cols[6]?.v || '';
 
-    // Tenta parsear a data de várias formas
-    let orderDate = null;
-    const rawDate = cols[1]?.v;
-    if (rawDate) {
-      if (typeof rawDate === 'string' && rawDate.includes('Date(')) {
-        const parts = rawDate.replace('Date(','').replace(')','').split(',').map(Number);
-        orderDate = new Date(parts[0], parts[1], parts[2]);
-      } else if (typeof rawDate === 'string') {
-        orderDate = new Date(rawDate.substring(0, 10));
-      } else {
-        orderDate = new Date(rawDate);
-      }
+    let orderDate = new Date(data);
+
+    if (!isNaN(orderDate) && orderDate >= start && orderDate <= end) {
+      orders.push({
+        id,
+        cliente,
+        total,
+        status,
+        utm_campaign: utm,
+        utm_source: source
+      });
     }
 
-    const inRange = !orderDate || isNaN(orderDate) || (orderDate >= start && orderDate <= end);
-    if (inRange) {
-      orders.push({ id, created_at: rawDate, customer, total, status, utm_campaign, utm_source, payment });
-    }
   });
 
   return orders;
 }
 
-// ══════════════════════════════════════════════
-//  RENDER
-// ══════════════════════════════════════════════
+// KPI
 function renderKPIs(fbData, yampiOrders) {
-  // Facebook totals — converte USD → BRL
+
   const totalSpentUSD = fbData.reduce((s, c) => s + parseFloat(c.spend || 0), 0);
   const totalSpent = totalSpentUSD * USD_TO_BRL;
 
-  // Yampi totals — only approved/paid
-  const approvedStatuses = ['Pago', 'Entregue', 'Em transporte', 'approved', 'paid', 'processing', 'shipped', 'delivered'];
-  const approvedOrders = yampiOrders.filter(o => approvedStatuses.includes(o.status || o.status?.value || ''));
-  const totalRevenue = approvedOrders.reduce((s, o) => s + parseFloat(o.total || 0), 0);
-  const totalOrders = approvedOrders.length;
-  const profit = totalRevenue - totalSpent;
-  const roas = totalSpent > 0 ? (totalRevenue / totalSpent) : 0;
+  const approvedStatuses = ['Pago', 'Entregue', 'Em transporte'];
 
-  document.getElementById('kpi-spent').textContent = fmt(totalSpent);
-  document.getElementById('kpi-spent').title = `USD $${totalSpentUSD.toFixed(2)} × R$${USD_TO_BRL.toFixed(2)}`;
-  document.querySelector('#kpi-spent + .kpi-sub').textContent = `US$ ${totalSpentUSD.toFixed(2)} × R$ ${USD_TO_BRL.toFixed(2)}/dólar`;
+  const approvedOrders = yampiOrders.filter(o =>
+    approvedStatuses.includes(o.status)
+  );
+
+  const totalRevenue = approvedOrders.reduce((s, o) => s + o.total, 0);
+  const totalOrders = approvedOrders.length;
+
+  const profit = totalRevenue - totalSpent;
+  const roas = totalSpent > 0 ? totalRevenue / totalSpent : 0;
+
   document.getElementById('kpi-revenue').textContent = fmt(totalRevenue);
   document.getElementById('kpi-orders').textContent = fmtNum(totalOrders);
   document.getElementById('kpi-profit').textContent = fmt(profit);
-  document.getElementById('kpi-profit').className = 'kpi-value ' + (profit >= 0 ? 'positive' : 'negative');
 
-  document.getElementById('roas-value').textContent = roas > 0 ? roas.toFixed(2) + 'x' : '—';
-  document.getElementById('roas-sub').textContent = roas > 0
-    ? `Para cada R$1 investido, você recebeu R$${roas.toFixed(2)} de volta`
-    : 'Retorno sobre investimento em anúncios';
+  document.getElementById('roas-value').textContent =
+    roas > 0 ? roas.toFixed(2) + 'x' : '—';
 
-  return { totalSpent, totalRevenue, totalOrders, profit, roas };
+  return { totalRevenue, totalOrders, profit, roas };
 }
 
-function renderCampaigns(fbData) {
-  const container = document.getElementById('campaigns-list');
-  if (!fbData.length) {
-    container.innerHTML = '<div class="empty-state">Nenhuma campanha encontrada no período.</div>';
-    return;
-  }
-
-  const maxSpend = Math.max(...fbData.map(c => parseFloat(c.spend || 0)));
-  container.innerHTML = '';
-
-  fbData
-    .sort((a, b) => parseFloat(b.spend || 0) - parseFloat(a.spend || 0))
-    .forEach((c, i) => {
-      const spent = parseFloat(c.spend || 0) * USD_TO_BRL;
-      const pct = maxSpend > 0 ? (spent / maxSpend * 100).toFixed(1) : 0;
-      const clicks = parseInt(c.clicks || 0);
-      const impressions = parseInt(c.impressions || 0);
-
-      const div = document.createElement('div');
-      div.className = 'camp-row';
-      div.style.animationDelay = (i * 0.06) + 's';
-      div.innerHTML = `
-        <div class="camp-name">
-          ${c.campaign_name}
-          <div class="camp-status">${fmtNum(impressions)} impressões · ${fmtNum(clicks)} cliques</div>
-        </div>
-        <div class="camp-spent">${fmt(spent)}</div>
-        <div class="camp-revenue" title="Receita não disponível por campanha sem pixel">—</div>
-        <div class="camp-roas" style="color:var(--muted)">—</div>
-        <div class="camp-bar-row"><div class="camp-bar-fill" style="width:0%" data-pct="${pct}"></div></div>
-      `;
-      container.appendChild(div);
-    });
-
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      document.querySelectorAll('.camp-bar-fill').forEach(b => {
-        b.style.width = b.dataset.pct + '%';
-      });
-    }, 200);
-  });
-}
-
-function statusBadge(status) {
-  const map = {
-    approved: ['badge-green', 'Aprovado'],
-    paid: ['badge-green', 'Pago'],
-    processing: ['badge-yellow', 'Processando'],
-    shipped: ['badge-yellow', 'Enviado'],
-    delivered: ['badge-green', 'Entregue'],
-    cancelled: ['badge-red', 'Cancelado'],
-    refunded: ['badge-red', 'Reembolsado'],
-    pending: ['badge-gray', 'Pendente'],
-  };
-  const [cls, label] = map[status] || ['badge-gray', status || '—'];
-  return `<span class="badge ${cls}">${label}</span>`;
-}
-
+// PEDIDOS
 function renderOrders(orders) {
+
   const tbody = document.getElementById('orders-body');
+
   if (!orders.length) {
-    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state">Nenhum pedido encontrado no período.</div></td></tr>';
+    tbody.innerHTML = `<tr><td colspan="5">Nenhum pedido</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = orders.slice(0, 30).map(o => {
-    const name = o.customer || '—';
-    const utmCampaign = o.utm_campaign || '—';
-    const total = parseFloat(o.total || 0);
-    const status = o.status || '';
-    return `
-      <tr>
-        <td style="color:var(--muted);font-size:0.76rem">#${o.number || o.id}</td>
-        <td>${name}</td>
-        <td style="font-size:0.78rem;color:var(--muted)">${utmCampaign}</td>
-        <td style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--green)">${fmt(total)}</td>
-        <td>${statusBadge(status)}</td>
-      </tr>
-    `;
-  }).join('');
+  tbody.innerHTML = orders.slice(0, 30).map(o => `
+    <tr>
+      <td>#${o.id}</td>
+      <td>${o.cliente}</td>
+      <td>${o.utm_campaign || '-'}</td>
+      <td>R$ ${o.total.toFixed(2)}</td>
+      <td>${o.status}</td>
+    </tr>
+  `).join('');
 }
-
-// ══════════════════════════════════════════════
-//  MAIN LOAD
-// ══════════════════════════════════════════════
-async function loadAll() {
-  const btn = document.getElementById('btn-refresh');
-  const icon = document.getElementById('btn-icon');
-  const dateStart = document.getElementById('date-start').value;
-  const dateEnd = document.getElementById('date-end').value;
-
-  if (!dateStart || !dateEnd) {
-    setStatus('Selecione o período antes de atualizar.', 'error');
-    return;
-  }
-
-  btn.disabled = true;
-  icon.style.animation = 'spin 0.8s linear infinite';
-  icon.style.display = 'inline-block';
-
-  setStatus('Buscando câmbio do dia...', 'loading');
-  await fetchExchangeRate();
-
-  setStatus('Buscando dados do Facebook Ads...', 'loading');
-
-  let fbData = [], yampiOrders = [];
-  let errors = [];
-
-  try {
-    fbData = await fetchFacebook(dateStart, dateEnd);
-    setStatus('Facebook OK. Buscando pedidos Yampi...', 'loading');
-  } catch (e) {
-    errors.push(e.message);
-    setStatus('Erro Facebook: ' + e.message, 'error');
-  }
-
-  try {
-    yampiOrders = await fetchYampi(dateStart, dateEnd);
-  } catch (e) {
-    errors.push(e.message);
-  }
-
-  renderKPIs(fbData, yampiOrders);
-  renderCampaigns(fbData);
-  renderOrders(yampiOrders);
-
-  btn.disabled = false;
-  icon.style.animation = '';
-
-  if (errors.length) {
-    setStatus('⚠️ ' + errors.join(' | '), 'error');
-  } else {
-    const now = new Date().toLocaleTimeString('pt-BR');
-    setStatus(`✓ Dados atualizados às ${now} · Câmbio: R$ ${USD_TO_BRL.toFixed(2)}/USD · ${dateStart} até ${dateEnd}`, 'ok');
-  }
-}
-
-// Init
-setDates();
 </script>
-</body>
-</html>
