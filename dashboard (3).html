@@ -593,8 +593,23 @@ async function fetchYampi(dateStart, dateEnd) {
 }
 
 function isApprovedStatus(status) {
-  return ['Pago', 'Entregue', 'Em transporte', 'approved', 'paid', 'processing', 'shipped', 'delivered']
-    .includes(String(status || '').trim());
+  const s = normalizeText(status);
+
+  const aprovados = [
+    'pago',
+    'pagamento aprovado',
+    'aprovado',
+    'pedido aprovado',
+    'entregue',
+    'em transporte',
+    'processing',
+    'paid',
+    'approved',
+    'shipped',
+    'delivered'
+  ];
+
+  return aprovados.includes(s);
 }
 
 function buildRevenueByCampaign(yampiOrders) {
