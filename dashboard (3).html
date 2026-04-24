@@ -465,18 +465,45 @@ async function fetchFacebook(dateStart, dateEnd) {
 //  YAMPI API  (tenta múltiplos proxies)
 // ══════════════════════════════════════════════
 async function fetchYampi(dateStart, dateEnd) {
-  // Usa Google Apps Script como proxy para evitar CORS
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwFjmxYuva_BGv7Ya-yUqschO_stF-8huQ-nBfuG255Jx9X0eV5rheX2KdBDPh9wnl9sQ/exec';
-  
-  const url = `${APPS_SCRIPT_URL}?date_start=${dateStart}&date_end=${dateEnd}`;
-  
+  // Lê direto da planilha Google Sheets (sem CORS!)
+  const SHEET_ID = '1MQoxtYfNbOhF9A2TaqKHC4f-ZiEeMs_8Ob-xOd-lYMQ';
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+
   const res = await fetch(url);
-  if (!res.ok) throw new Error('Yampi: erro ao conectar via proxy');
+  if (!res.ok) throw new Error('Planilha: erro ao carregar dados');
+
+  const text = await res.text();
+  // Remove o wrapper google.visualization.Query.setResponse(...)
+  const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
   
-  const data = await res.json();
-  if (!data.success) throw new Error('Yampi: ' + (data.error || 'erro desconhecido'));
-  
-  return data.orders || [];
+  const rows = json.table?.rows || [];
+  const orders = [];
+
+  const start = new Date(dateStart);
+  const end   = new Date(dateEnd);
+  end.setHours(23, 59, 59);
+
+  rows.forEach(row => {
+    const cols = row.c;
+    if (!cols || !cols[0]) return;
+
+    const id          = String(cols[0]?.v || '');
+    const dateRaw     = cols[1]?.v || '';
+    const customer    = cols[2]?.v || '';
+    const total       = parseFloat(cols[3]?.v || 0);
+    const status      = cols[4]?.v || '';
+    const utm_campaign = cols[5]?.v || '';
+    const utm_source  = cols[6]?.v || '';
+    const payment     = cols[7]?.v || '';
+
+    // Filtra por data
+    const orderDate = new Date(dateRaw);
+    if (orderDate >= start && orderDate <= end) {
+      orders.push({ id, created_at: dateRaw, customer, total, status, utm_campaign, utm_source, payment });
+    }
+  });
+
+  return orders;
 }
 
 // ══════════════════════════════════════════════
