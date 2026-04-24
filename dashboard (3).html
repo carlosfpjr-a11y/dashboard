@@ -487,17 +487,24 @@ async function fetchYampi(dateStart, dateEnd) {
     const cols = row.c;
     if (!cols || !cols[0]) return;
 
-    const id          = String(cols[0]?.v || '');
-    const dateRaw     = cols[1]?.v || '';
-    const customer    = cols[2]?.v || '';
-    const total       = parseFloat(cols[3]?.v || 0);
-    const status      = cols[4]?.v || '';
-    const utm_campaign = cols[5]?.v || '';
-    const utm_source  = cols[6]?.v || '';
-    const payment     = cols[7]?.v || '';
+    const id           = String(cols[0]?.v || '');
+    const dateRaw      = cols[1]?.f || cols[1]?.v || '';
+    const customer     = cols[2]?.v || '';
+    const total        = parseFloat(cols[3]?.v || 0);
+    const status       = String(cols[4]?.v || '');
+    const utm_campaign = String(cols[5]?.v || '');
+    const utm_source   = String(cols[6]?.v || '');
+    const payment      = String(cols[7]?.v || '');
 
-    // Filtra por data
-    const orderDate = new Date(dateRaw);
+    // Google Sheets retorna datas como "Date(year,month,day,...)"
+    let orderDate;
+    if (typeof cols[1]?.v === 'string' && cols[1].v.startsWith('Date(')) {
+      const parts = cols[1].v.replace('Date(', '').replace(')', '').split(',');
+      orderDate = new Date(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+    } else {
+      orderDate = new Date(dateRaw);
+    }
+
     if (orderDate >= start && orderDate <= end) {
       orders.push({ id, created_at: dateRaw, customer, total, status, utm_campaign, utm_source, payment });
     }
