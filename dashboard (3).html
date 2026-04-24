@@ -465,48 +465,52 @@ async function fetchFacebook(dateStart, dateEnd) {
 //  YAMPI API  (tenta múltiplos proxies)
 // ══════════════════════════════════════════════
 async function fetchYampi(dateStart, dateEnd) {
-  // Lê direto da planilha Google Sheets (sem CORS!)
   const SHEET_ID = '1MQoxtYfNbOhF9A2TaqKHC4f-ZiEeMs_8Ob-xOd-lYMQ';
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
 
   const res = await fetch(url);
   if (!res.ok) throw new Error('Planilha: erro ao carregar dados');
 
   const text = await res.text();
-  // Remove o wrapper google.visualization.Query.setResponse(...)
   const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
   
   const rows = json.table?.rows || [];
+  if (!rows.length) throw new Error('Planilha: sem dados');
+
+  const start = new Date(dateStart + 'T00:00:00');
+  const end   = new Date(dateEnd   + 'T23:59:59');
   const orders = [];
 
-  const start = new Date(dateStart);
-  const end   = new Date(dateEnd);
-  end.setHours(23, 59, 59);
-
-  rows.forEach(row => {
+  rows.forEach((row, i) => {
+    if (i === 0) return; // pula cabeçalho se houver
     const cols = row.c;
-    if (!cols || !cols[0]) return;
+    if (!cols || !cols[0]?.v) return;
 
     const id           = String(cols[0]?.v || '');
-    const dateRaw      = cols[1]?.f || cols[1]?.v || '';
-    const customer     = cols[2]?.v || '';
-    const total        = parseFloat(cols[3]?.v || 0);
+    const customer     = String(cols[2]?.v || '');
+    const total        = parseFloat(String(cols[3]?.v || '0').replace(',', '.')) || 0;
     const status       = String(cols[4]?.v || '');
     const utm_campaign = String(cols[5]?.v || '');
     const utm_source   = String(cols[6]?.v || '');
     const payment      = String(cols[7]?.v || '');
 
-    // Google Sheets retorna datas como "Date(year,month,day,...)"
-    let orderDate;
-    if (typeof cols[1]?.v === 'string' && cols[1].v.startsWith('Date(')) {
-      const parts = cols[1].v.replace('Date(', '').replace(')', '').split(',');
-      orderDate = new Date(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
-    } else {
-      orderDate = new Date(dateRaw);
+    // Tenta parsear a data de várias formas
+    let orderDate = null;
+    const rawDate = cols[1]?.v;
+    if (rawDate) {
+      if (typeof rawDate === 'string' && rawDate.includes('Date(')) {
+        const parts = rawDate.replace('Date(','').replace(')','').split(',').map(Number);
+        orderDate = new Date(parts[0], parts[1], parts[2]);
+      } else if (typeof rawDate === 'string') {
+        orderDate = new Date(rawDate.substring(0, 10));
+      } else {
+        orderDate = new Date(rawDate);
+      }
     }
 
-    if (orderDate >= start && orderDate <= end) {
-      orders.push({ id, created_at: dateRaw, customer, total, status, utm_campaign, utm_source, payment });
+    const inRange = !orderDate || isNaN(orderDate) || (orderDate >= start && orderDate <= end);
+    if (inRange) {
+      orders.push({ id, created_at: rawDate, customer, total, status, utm_campaign, utm_source, payment });
     }
   });
 
