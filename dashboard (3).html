@@ -49,9 +49,20 @@
     line-height: 1;
   }
 
-  .logo-area p { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+  .logo-area p {
+    color: var(--muted);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
 
-  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
 
   .date-range {
     display: flex;
@@ -74,7 +85,10 @@
     cursor: pointer;
   }
 
-  .date-range input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
+  .date-range input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.6);
+    cursor: pointer;
+  }
 
   .date-range span { color: var(--muted); }
 
@@ -114,11 +128,13 @@
   }
 
   .dot {
-    width: 8px; height: 8px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: var(--muted2);
     flex-shrink: 0;
   }
+
   .dot.loading { background: var(--accent); animation: pulse 1s infinite; }
   .dot.ok { background: var(--green); }
   .dot.error { background: var(--red); }
@@ -143,7 +159,7 @@
 
   .kpi-card:hover { border-color: var(--accent); }
 
-  .kpi-card .kpi-label {
+  .kpi-label {
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -151,19 +167,19 @@
     margin-bottom: 8px;
   }
 
-  .kpi-card .kpi-value {
+  .kpi-value {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.9rem;
     letter-spacing: 0.5px;
     line-height: 1;
   }
 
-  .kpi-card .kpi-value.positive { color: var(--green); }
-  .kpi-card .kpi-value.negative { color: var(--red); }
-  .kpi-card .kpi-value.accent { color: var(--accent); }
-  .kpi-card .kpi-value.neutral { color: var(--text); }
+  .positive { color: var(--green); }
+  .negative { color: var(--red); }
+  .accent { color: var(--accent); }
+  .neutral { color: var(--text); }
 
-  .kpi-card .kpi-sub {
+  .kpi-sub {
     font-size: 0.72rem;
     color: var(--muted);
     margin-top: 4px;
@@ -181,9 +197,26 @@
     animation: fadeUp 0.3s ease both;
   }
 
-  .roas-card .roas-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.65; }
-  .roas-card .roas-value { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 1px; line-height: 1; }
-  .roas-card .roas-sub { font-size: 0.78rem; opacity: 0.65; margin-top: 4px; }
+  .roas-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.65;
+  }
+
+  .roas-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  .roas-sub {
+    font-size: 0.78rem;
+    opacity: 0.65;
+    margin-top: 4px;
+  }
 
   .section-title {
     font-family: 'Bebas Neue', sans-serif;
@@ -194,7 +227,12 @@
     text-transform: uppercase;
   }
 
-  .campaigns-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+  .campaigns-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
 
   .camp-row {
     background: var(--card);
@@ -206,16 +244,28 @@
     gap: 8px 20px;
     align-items: center;
     animation: fadeUp 0.4s ease both;
-    transition: border-color 0.2s;
   }
 
-  .camp-row:hover { border-color: #3a4a3c; }
-
   .camp-name { font-size: 0.88rem; font-weight: 500; }
-  .camp-name .camp-status { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
 
-  .camp-spent { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: var(--red); }
-  .camp-revenue { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: var(--green); }
+  .camp-status {
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .camp-spent {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    color: var(--red);
+  }
+
+  .camp-revenue {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    color: var(--green);
+  }
+
   .camp-roas {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.1rem;
@@ -242,7 +292,11 @@
     transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
   }
 
-  .orders-table { width: 100%; border-collapse: collapse; }
+  .orders-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
   .orders-table th {
     text-align: left;
     font-size: 0.68rem;
@@ -252,13 +306,12 @@
     padding: 10px 14px;
     border-bottom: 1px solid var(--border);
   }
+
   .orders-table td {
     padding: 12px 14px;
     font-size: 0.84rem;
     border-bottom: 1px solid var(--muted2);
   }
-  .orders-table tr:last-child td { border-bottom: none; }
-  .orders-table tr:hover td { background: var(--surface); }
 
   .badge {
     display: inline-block;
@@ -269,6 +322,7 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
+
   .badge-green { background: rgba(60,255,160,0.12); color: var(--green); }
   .badge-yellow { background: rgba(198,241,53,0.12); color: var(--accent); }
   .badge-red { background: rgba(255,92,92,0.12); color: var(--red); }
@@ -283,7 +337,7 @@
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes spin {
@@ -292,88 +346,90 @@
   }
 </style>
 </head>
+
 <body>
 <div class="container">
 
-  <header>
-    <div class="logo-area">
-      <h1>Facilita Bio</h1>
-      <p>Dashboard de Performance</p>
-    </div>
-    <div class="header-right">
-      <div class="date-range">
-        <input type="date" id="date-start">
-        <span>→</span>
-        <input type="date" id="date-end">
-      </div>
-      <button id="btn-refresh" onclick="loadAll()">
-        <span id="btn-icon">↻</span> ATUALIZAR
-      </button>
-    </div>
-  </header>
-
-  <div id="status-bar">
-    <div class="dot" id="status-dot"></div>
-    <span id="status-text">Clique em ATUALIZAR para carregar os dados.</span>
+<header>
+  <div class="logo-area">
+    <h1>Facilita Bio</h1>
+    <p>Dashboard de Performance</p>
   </div>
 
-  <div class="roas-card" id="roas-card">
-    <div>
-      <div class="roas-label">ROAS Geral</div>
-      <div class="roas-value" id="roas-value">—</div>
-      <div class="roas-sub" id="roas-sub">Retorno sobre investimento em anúncios</div>
+  <div class="header-right">
+    <div class="date-range">
+      <input type="date" id="date-start">
+      <span>→</span>
+      <input type="date" id="date-end">
     </div>
-    <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-      <circle cx="26" cy="26" r="24" stroke="#0a0c0b" stroke-width="2" opacity="0.2"/>
-      <path d="M16 26l8 8 12-16" stroke="#0a0c0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+
+    <button id="btn-refresh" onclick="loadAll()">
+      <span id="btn-icon">↻</span> ATUALIZAR
+    </button>
+  </div>
+</header>
+
+<div id="status-bar">
+  <div class="dot" id="status-dot"></div>
+  <span id="status-text">Clique em ATUALIZAR para carregar os dados.</span>
+</div>
+
+<div class="roas-card">
+  <div>
+    <div class="roas-label">ROAS Geral</div>
+    <div class="roas-value" id="roas-value">—</div>
+    <div class="roas-sub" id="roas-sub">Retorno sobre investimento em anúncios</div>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">💸 Total Gasto (FB)</div>
+    <div class="kpi-value negative" id="kpi-spent">—</div>
+    <div class="kpi-sub">Investimento em anúncios</div>
   </div>
 
-  <div class="kpi-grid">
-    <div class="kpi-card" style="animation-delay:0.05s">
-      <div class="kpi-label">💸 Total Gasto (FB)</div>
-      <div class="kpi-value negative" id="kpi-spent">—</div>
-      <div class="kpi-sub">Investimento em anúncios</div>
-    </div>
-    <div class="kpi-card" style="animation-delay:0.1s">
-      <div class="kpi-label">🛒 Receita (Yampi)</div>
-      <div class="kpi-value positive" id="kpi-revenue">—</div>
-      <div class="kpi-sub">Pedidos aprovados</div>
-    </div>
-    <div class="kpi-card" style="animation-delay:0.15s">
-      <div class="kpi-label">📦 Pedidos</div>
-      <div class="kpi-value neutral" id="kpi-orders">—</div>
-      <div class="kpi-sub">No período</div>
-    </div>
-    <div class="kpi-card" style="animation-delay:0.2s">
-      <div class="kpi-label">💰 Lucro Estimado</div>
-      <div class="kpi-value accent" id="kpi-profit">—</div>
-      <div class="kpi-sub">Receita − Gasto</div>
-    </div>
+  <div class="kpi-card">
+    <div class="kpi-label">🛒 Receita (Yampi)</div>
+    <div class="kpi-value positive" id="kpi-revenue">—</div>
+    <div class="kpi-sub">Pedidos aprovados</div>
   </div>
 
-  <div class="section-title">Campanhas Facebook</div>
-  <div class="campaigns-list" id="campaigns-list">
-    <div class="empty-state">Clique em ATUALIZAR para carregar as campanhas.</div>
+  <div class="kpi-card">
+    <div class="kpi-label">📦 Pedidos</div>
+    <div class="kpi-value neutral" id="kpi-orders">—</div>
+    <div class="kpi-sub">No período</div>
   </div>
 
-  <div class="section-title">Últimos Pedidos Yampi</div>
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:32px;">
-    <table class="orders-table" id="orders-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Cliente</th>
-          <th>Campanha / UTM</th>
-          <th>Valor</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody id="orders-body">
-        <tr><td colspan="5"><div class="empty-state">Clique em ATUALIZAR para carregar os pedidos.</div></td></tr>
-      </tbody>
-    </table>
+  <div class="kpi-card">
+    <div class="kpi-label">💰 Lucro Estimado</div>
+    <div class="kpi-value accent" id="kpi-profit">—</div>
+    <div class="kpi-sub">Receita − Gasto</div>
   </div>
+</div>
+
+<div class="section-title">Campanhas Facebook</div>
+<div class="campaigns-list" id="campaigns-list">
+  <div class="empty-state">Clique em ATUALIZAR para carregar as campanhas.</div>
+</div>
+
+<div class="section-title">Últimos Pedidos Yampi</div>
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:32px;">
+  <table class="orders-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Cliente</th>
+        <th>Campanha / UTM</th>
+        <th>Valor</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="orders-body">
+      <tr><td colspan="5"><div class="empty-state">Clique em ATUALIZAR para carregar os pedidos.</div></td></tr>
+    </tbody>
+  </table>
+</div>
 
 </div>
 
@@ -381,7 +437,7 @@
 const CONFIG = {
   facebook: {
     token: 'EAAOCMdh5FYMBRbNuWmxOZCkuzFGmnmiAoieV9ptTle1pRCWELiGe3cv9jb9xpD57E62DPeo04hnMlfamUG1vXQyfq0NdjtyudiObxZCVSOgS1nZC1Vp0GptbTtdpPpwZAdaxMGa2YxpdmEe0ZC32If1gjrSn0R1KBPSth604WR1WkwvFLPlAK6DZCbzbGmAatW3AfZBC4XaXuJ19ZBPa',
-    adAccountId: 'act_723175113800731',
+    adAccountId: 'act_723175113800731'
   },
   sheet: {
     id: '1MQoxtYfNbOhF9A2TaqKHC4f-ZiEeMs_8Ob-xOd-lYMQ'
@@ -395,14 +451,19 @@ const fmtNum = v => isNaN(v) ? '—' : Number(v).toLocaleString('pt-BR');
 
 function escapeHtml(text) {
   return String(text || '').replace(/[&<>"']/g, m => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
   }[m]));
 }
 
 function normalizeText(text) {
   return String(text || '')
     .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/—/g, '-')
     .replace(/\s+/g, ' ')
     .trim();
@@ -417,6 +478,7 @@ function setStatus(msg, type = '') {
 function setDates() {
   const today = new Date();
   const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
   document.getElementById('date-end').value = today.toISOString().split('T')[0];
   document.getElementById('date-start').value = firstDay.toISOString().split('T')[0];
 }
@@ -425,38 +487,68 @@ async function fetchExchangeRate() {
   try {
     const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const data = await res.json();
-    if (data.rates?.BRL) USD_TO_BRL = data.rates.BRL;
+
+    if (data.rates?.BRL) {
+      USD_TO_BRL = data.rates.BRL;
+    }
   } catch (e) {
-    console.warn('Câmbio não disponível, usando fallback:', USD_TO_BRL);
+    console.warn('Câmbio indisponível. Usando fallback:', USD_TO_BRL);
   }
 }
 
 async function fetchFacebook(dateStart, dateEnd) {
   const fields = 'campaign_name,spend,impressions,clicks,actions';
-  const timeRange = encodeURIComponent(JSON.stringify({ since: dateStart, until: dateEnd }));
+  const timeRange = encodeURIComponent(JSON.stringify({
+    since: dateStart,
+    until: dateEnd
+  }));
+
   const url = `https://graph.facebook.com/v20.0/${CONFIG.facebook.adAccountId}/insights?fields=${fields}&time_range=${timeRange}&level=campaign&limit=200&access_token=${CONFIG.facebook.token}`;
 
   const res = await fetch(url);
   const data = await res.json();
 
   if (data.error) throw new Error('Facebook: ' + data.error.message);
+
   return data.data || [];
 }
 
 function parseGoogleDate(value) {
   if (!value) return null;
 
-  if (value instanceof Date) return value;
-
-  const raw = String(value);
+  const raw = String(value).trim();
 
   if (raw.includes('Date(')) {
-    const parts = raw.replace('Date(', '').replace(')', '').split(',').map(Number);
-    return new Date(parts[0], parts[1], parts[2], parts[3] || 0, parts[4] || 0, parts[5] || 0);
+    const parts = raw
+      .replace('Date(', '')
+      .replace(')', '')
+      .split(',')
+      .map(Number);
+
+    return new Date(
+      parts[0],
+      parts[1],
+      parts[2],
+      parts[3] || 0,
+      parts[4] || 0,
+      parts[5] || 0
+    );
   }
 
-  const d = new Date(raw);
-  return isNaN(d) ? null : d;
+  if (raw.includes('/')) {
+    const [datePart, timePart = '00:00:00'] = raw.split(' ');
+    const [dia, mes, ano] = datePart.split('/').map(Number);
+    const [hora = 0, minuto = 0, segundo = 0] = timePart.split(':').map(Number);
+
+    return new Date(ano, mes - 1, dia, hora, minuto, segundo);
+  }
+
+  if (raw.includes('-')) {
+    const d = new Date(raw);
+    return isNaN(d) ? null : d;
+  }
+
+  return null;
 }
 
 async function fetchYampi(dateStart, dateEnd) {
@@ -475,13 +567,15 @@ async function fetchYampi(dateStart, dateEnd) {
 
   rows.forEach((row, i) => {
     if (i === 0) return;
+
     const cols = row.c || [];
     if (!cols[0]?.v) return;
 
-    const rawDate = cols[1]?.v || cols[1]?.f || '';
+    const rawDate = cols[1]?.f || cols[1]?.v || '';
     const orderDate = parseGoogleDate(rawDate);
 
-    if (orderDate && (orderDate < start || orderDate > end)) return;
+    if (!orderDate || isNaN(orderDate)) return;
+    if (orderDate < start || orderDate > end) return;
 
     orders.push({
       id: String(cols[0]?.v || ''),
@@ -499,8 +593,8 @@ async function fetchYampi(dateStart, dateEnd) {
 }
 
 function isApprovedStatus(status) {
-  const approved = ['Pago', 'Entregue', 'Em transporte', 'approved', 'paid', 'processing', 'shipped', 'delivered'];
-  return approved.includes(String(status || '').trim());
+  return ['Pago', 'Entregue', 'Em transporte', 'approved', 'paid', 'processing', 'shipped', 'delivered']
+    .includes(String(status || '').trim());
 }
 
 function buildRevenueByCampaign(yampiOrders) {
@@ -511,10 +605,9 @@ function buildRevenueByCampaign(yampiOrders) {
     .filter(o => isApprovedStatus(o.status))
     .forEach(o => {
       const key = normalizeText(o.utm_campaign || 'Sem campanha');
-      if (!revenueMap[key]) revenueMap[key] = 0;
-      if (!ordersMap[key]) ordersMap[key] = 0;
-      revenueMap[key] += parseFloat(o.total || 0);
-      ordersMap[key] += 1;
+
+      revenueMap[key] = (revenueMap[key] || 0) + parseFloat(o.total || 0);
+      ordersMap[key] = (ordersMap[key] || 0) + 1;
     });
 
   return { revenueMap, ordersMap };
@@ -530,11 +623,16 @@ function findRevenueForCampaign(campaignName, revenueMap, ordersMap) {
   let bestKey = null;
 
   Object.keys(revenueMap).forEach(k => {
-    if (!bestKey && (k.includes(key) || key.includes(k))) bestKey = k;
+    if (!bestKey && (k.includes(key) || key.includes(k))) {
+      bestKey = k;
+    }
   });
 
   if (bestKey) {
-    return { revenue: revenueMap[bestKey], orders: ordersMap[bestKey] || 0 };
+    return {
+      revenue: revenueMap[bestKey],
+      orders: ordersMap[bestKey] || 0
+    };
   }
 
   return { revenue: 0, orders: 0 };
@@ -548,11 +646,11 @@ function renderKPIs(fbData, yampiOrders) {
   const totalRevenue = approvedOrders.reduce((s, o) => s + parseFloat(o.total || 0), 0);
   const totalOrders = approvedOrders.length;
   const profit = totalRevenue - totalSpent;
-  const roas = totalSpent > 0 ? (totalRevenue / totalSpent) : 0;
+  const roas = totalSpent > 0 ? totalRevenue / totalSpent : 0;
 
   document.getElementById('kpi-spent').textContent = fmt(totalSpent);
-  document.getElementById('kpi-spent').title = `USD $${totalSpentUSD.toFixed(2)} × R$${USD_TO_BRL.toFixed(2)}`;
-  document.querySelector('#kpi-spent + .kpi-sub').textContent = `US$ ${totalSpentUSD.toFixed(2)} × R$ ${USD_TO_BRL.toFixed(2)}/dólar`;
+  document.querySelector('#kpi-spent + .kpi-sub').textContent =
+    `US$ ${totalSpentUSD.toFixed(2)} × R$ ${USD_TO_BRL.toFixed(2)}/dólar`;
 
   document.getElementById('kpi-revenue').textContent = fmt(totalRevenue);
   document.getElementById('kpi-orders').textContent = fmtNum(totalOrders);
@@ -563,8 +661,6 @@ function renderKPIs(fbData, yampiOrders) {
   document.getElementById('roas-sub').textContent = roas > 0
     ? `Para cada R$1 investido, você recebeu R$${roas.toFixed(2)} de volta`
     : 'Retorno sobre investimento em anúncios';
-
-  return { totalSpent, totalRevenue, totalOrders, profit, roas };
 }
 
 function renderCampaigns(fbData, yampiOrders) {
@@ -583,8 +679,8 @@ function renderCampaigns(fbData, yampiOrders) {
     .sort((a, b) => parseFloat(b.spend || 0) - parseFloat(a.spend || 0))
     .forEach((c, i) => {
       const spent = parseFloat(c.spend || 0) * USD_TO_BRL;
-      const clicks = parseInt(c.clicks || 0);
       const impressions = parseInt(c.impressions || 0);
+      const clicks = parseInt(c.clicks || 0);
       const pct = spent > 0 ? (spent / maxSpendBRL * 100).toFixed(1) : 0;
 
       const found = findRevenueForCampaign(c.campaign_name, revenueMap, ordersMap);
@@ -597,6 +693,7 @@ function renderCampaigns(fbData, yampiOrders) {
       const div = document.createElement('div');
       div.className = 'camp-row';
       div.style.animationDelay = (i * 0.06) + 's';
+
       div.innerHTML = `
         <div class="camp-name">
           ${escapeHtml(c.campaign_name)}
@@ -607,6 +704,7 @@ function renderCampaigns(fbData, yampiOrders) {
         <div class="camp-roas" style="color:${roasColor}">${roas > 0 ? roas.toFixed(2) + 'x' : '—'}</div>
         <div class="camp-bar-row"><div class="camp-bar-fill" style="width:0%" data-pct="${pct}"></div></div>
       `;
+
       container.appendChild(div);
     });
 
@@ -627,15 +725,7 @@ function statusBadge(status) {
     'Cancelado': ['badge-red', 'Cancelado'],
     'Reembolsado': ['badge-red', 'Reembolsado'],
     'Troca/Devolução': ['badge-red', 'Troca/Devolução'],
-    'Aguardando pagamento': ['badge-gray', 'Aguardando'],
-    approved: ['badge-green', 'Aprovado'],
-    paid: ['badge-green', 'Pago'],
-    processing: ['badge-yellow', 'Processando'],
-    shipped: ['badge-yellow', 'Enviado'],
-    delivered: ['badge-green', 'Entregue'],
-    cancelled: ['badge-red', 'Cancelado'],
-    refunded: ['badge-red', 'Reembolsado'],
-    pending: ['badge-gray', 'Pendente'],
+    'Aguardando pagamento': ['badge-gray', 'Aguardando']
   };
 
   const [cls, label] = map[status] || ['badge-gray', status || '—'];
@@ -650,17 +740,15 @@ function renderOrders(orders) {
     return;
   }
 
-  tbody.innerHTML = orders.slice(0, 30).map(o => {
-    return `
-      <tr>
-        <td style="color:var(--muted);font-size:0.76rem">#${escapeHtml(o.id)}</td>
-        <td>${escapeHtml(o.customer || '—')}</td>
-        <td style="font-size:0.78rem;color:var(--muted)">${escapeHtml(o.utm_campaign || '—')}</td>
-        <td style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--green)">${fmt(parseFloat(o.total || 0))}</td>
-        <td>${statusBadge(o.status || '')}</td>
-      </tr>
-    `;
-  }).join('');
+  tbody.innerHTML = orders.slice(0, 30).map(o => `
+    <tr>
+      <td style="color:var(--muted);font-size:0.76rem">#${escapeHtml(o.id)}</td>
+      <td>${escapeHtml(o.customer || '—')}</td>
+      <td style="font-size:0.78rem;color:var(--muted)">${escapeHtml(o.utm_campaign || '—')}</td>
+      <td style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--green)">${fmt(parseFloat(o.total || 0))}</td>
+      <td>${statusBadge(o.status || '')}</td>
+    </tr>
+  `).join('');
 }
 
 async function loadAll() {
@@ -676,13 +764,17 @@ async function loadAll() {
 
   btn.disabled = true;
   icon.style.animation = 'spin 0.8s linear infinite';
-  icon.style.display = 'inline-block';
 
-  setStatus('Buscando câmbio do dia...', 'loading');
-  await fetchExchangeRate();
+  let fbData = [];
+  let yampiOrders = [];
+  const errors = [];
 
-  let fbData = [], yampiOrders = [];
-  let errors = [];
+  try {
+    setStatus('Buscando câmbio do dia...', 'loading');
+    await fetchExchangeRate();
+  } catch (e) {
+    errors.push(e.message);
+  }
 
   try {
     setStatus('Buscando dados do Facebook Ads...', 'loading');
