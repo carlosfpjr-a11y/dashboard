@@ -1,9 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #0f1115;
+  color: white;
+  padding: 20px;
+}
+
+.card {
+  background: #1a1d23;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+h1 { color: #b5f03c; }
+
+button {
+  padding: 10px 20px;
+  background: #b5f03c;
+  border: none;
+  cursor: pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Dashboard</h1>
+
+<button onclick="loadAll()">Atualizar</button>
+
+<div class="card">
+  <h2>💸 Gasto</h2>
+  <div id="spent">-</div>
+</div>
+
+<div class="card">
+  <h2>🛒 Receita</h2>
+  <div id="revenue">-</div>
+</div>
+
+<div class="card">
+  <h2>📦 Pedidos</h2>
+  <div id="orders">-</div>
+</div>
+
+<div class="card">
+  <h2>💰 Lucro</h2>
+  <div id="profit">-</div>
+</div>
+
+<div class="card">
+  <h2>🎯 ROAS</h2>
+  <div id="roas">-</div>
+</div>
+
 <script>
+
 // CONFIG
 const SHEET_ID = '1MQoxtYfNbOhF9A2TaqKHC4f-ZiEeMs_8Ob-xOd-lYMQ';
 
-// BUSCAR YAMPI (PLANILHA)
-async function fetchYampi(dateStart, dateEnd) {
+const FB_TOKEN = 'SEU_TOKEN_FACEBOOK';
+const AD_ACCOUNT = 'act_723175113800731';
+
+// ===== YAMPI (PLANILHA)
+async function fetchYampi() {
 
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
 
@@ -13,90 +81,62 @@ async function fetchYampi(dateStart, dateEnd) {
 
   const rows = json.table.rows || [];
 
-  const start = new Date(dateStart + 'T00:00:00');
-  const end   = new Date(dateEnd + 'T23:59:59');
-
-  const orders = [];
+  let orders = [];
 
   rows.forEach((row, i) => {
 
     if (i === 0) return;
 
-    const cols = row.c;
-    if (!cols) return;
+    const c = row.c;
 
-    const id       = cols[0]?.v || '';
-    const data     = cols[1]?.v || '';
-    const cliente  = cols[2]?.v || '';
-    const total    = parseFloat(cols[3]?.v || 0);
-    const status   = cols[4]?.v || '';
-    const utm      = cols[5]?.v || '';
-    const source   = cols[6]?.v || '';
-
-    let orderDate = new Date(data);
-
-    if (!isNaN(orderDate) && orderDate >= start && orderDate <= end) {
-      orders.push({
-        id,
-        cliente,
-        total,
-        status,
-        utm_campaign: utm,
-        utm_source: source
-      });
-    }
+    orders.push({
+      total: parseFloat(c[3]?.v || 0),
+      status: c[4]?.v || ''
+    });
 
   });
 
   return orders;
 }
 
-// KPI
-function renderKPIs(fbData, yampiOrders) {
+// ===== FACEBOOK
+async function fetchFacebook() {
 
-  const totalSpentUSD = fbData.reduce((s, c) => s + parseFloat(c.spend || 0), 0);
-  const totalSpent = totalSpentUSD * USD_TO_BRL;
+  const url = `https://graph.facebook.com/v20.0/${AD_ACCOUNT}/insights?fields=spend&access_token=${FB_TOKEN}`;
 
-  const approvedStatuses = ['Pago', 'Entregue', 'Em transporte'];
+  const res = await fetch(url);
+  const data = await res.json();
 
-  const approvedOrders = yampiOrders.filter(o =>
-    approvedStatuses.includes(o.status)
+  return data.data || [];
+}
+
+// ===== LOAD
+async function loadAll() {
+
+  const fb = await fetchFacebook();
+  const yampi = await fetchYampi();
+
+  const spentUSD = fb.reduce((s, c) => s + parseFloat(c.spend || 0), 0);
+  const spent = spentUSD * 5.7;
+
+  const aprovados = yampi.filter(o =>
+    ['Pago','Entregue','Em transporte'].includes(o.status)
   );
 
-  const totalRevenue = approvedOrders.reduce((s, o) => s + o.total, 0);
-  const totalOrders = approvedOrders.length;
+  const revenue = aprovados.reduce((s, o) => s + o.total, 0);
 
-  const profit = totalRevenue - totalSpent;
-  const roas = totalSpent > 0 ? totalRevenue / totalSpent : 0;
+  const profit = revenue - spent;
+  const roas = spent > 0 ? revenue / spent : 0;
 
-  document.getElementById('kpi-revenue').textContent = fmt(totalRevenue);
-  document.getElementById('kpi-orders').textContent = fmtNum(totalOrders);
-  document.getElementById('kpi-profit').textContent = fmt(profit);
+  document.getElementById('spent').innerText = 'R$ ' + spent.toFixed(2);
+  document.getElementById('revenue').innerText = 'R$ ' + revenue.toFixed(2);
+  document.getElementById('orders').innerText = aprovados.length;
+  document.getElementById('profit').innerText = 'R$ ' + profit.toFixed(2);
+  document.getElementById('roas').innerText = roas.toFixed(2) + 'x';
 
-  document.getElementById('roas-value').textContent =
-    roas > 0 ? roas.toFixed(2) + 'x' : '—';
-
-  return { totalRevenue, totalOrders, profit, roas };
 }
 
-// PEDIDOS
-function renderOrders(orders) {
-
-  const tbody = document.getElementById('orders-body');
-
-  if (!orders.length) {
-    tbody.innerHTML = `<tr><td colspan="5">Nenhum pedido</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = orders.slice(0, 30).map(o => `
-    <tr>
-      <td>#${o.id}</td>
-      <td>${o.cliente}</td>
-      <td>${o.utm_campaign || '-'}</td>
-      <td>R$ ${o.total.toFixed(2)}</td>
-      <td>${o.status}</td>
-    </tr>
-  `).join('');
-}
 </script>
+
+</body>
+</html>
