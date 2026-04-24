@@ -525,15 +525,20 @@ function parseGoogleDate(value) {
       .split(',')
       .map(Number);
 
-    return new Date(
-      parts[0],
-      parts[1],
-      parts[2],
-      parts[3] || 0,
-      parts[4] || 0,
-      parts[5] || 0
-    );
+    return new Date(parts[0], parts[1], parts[2]);
   }
+
+  if (raw.includes('/')) {
+    const [dia, mes, ano] = raw.split(' ')[0].split('/').map(Number);
+    return new Date(ano, mes - 1, dia);
+  }
+
+  if (raw.includes('-')) {
+    return new Date(raw.substring(0, 10) + 'T00:00:00');
+  }
+
+  return null;
+}
 
   if (raw.includes('/')) {
     const [datePart, timePart = '00:00:00'] = raw.split(' ');
