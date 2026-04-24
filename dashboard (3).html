@@ -465,40 +465,18 @@ async function fetchFacebook(dateStart, dateEnd) {
 //  YAMPI API  (tenta múltiplos proxies)
 // ══════════════════════════════════════════════
 async function fetchYampi(dateStart, dateEnd) {
-  const targetUrl = `https://api.dooki.com.br/v2/${CONFIG.yampi.alias}/orders?include=customer&limit=50&page=1&date_start=${dateStart}&date_end=${dateEnd}&skipCache=true`;
-
-  const headers = {
-    'User-Token': CONFIG.yampi.token,
-    'User-Secret-Key': CONFIG.yampi.secret,
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  };
-
-  const proxies = [
-    url => ({ url, headers }),
-    url => ({ url: `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`, headers }),
-    url => ({ url: `https://corsproxy.io/?${encodeURIComponent(url)}`, headers: { ...headers, 'x-requested-with': 'XMLHttpRequest' } }),
-    url => ({ url: `https://proxy.cors.sh/${url}`, headers: { ...headers, 'x-cors-api-key': 'temp_' } }),
-  ];
-
-  for (const buildProxy of proxies) {
-    try {
-      const { url: reqUrl, headers: reqHeaders } = buildProxy(targetUrl);
-      const res = await fetch(reqUrl, { headers: reqHeaders });
-      if (!res.ok) continue;
-      const raw = await res.json();
-      // allorigins encapsula em .contents
-      const parsed = raw.contents ? JSON.parse(raw.contents) : raw;
-      if (parsed.error || parsed.message) continue;
-      // API Dooki: dados em parsed.data (array) com paginação em parsed.meta
-      const orders = parsed.data || parsed.data?.data || [];
-      if (Array.isArray(orders)) return orders;
-      continue;
-    } catch (e) {
-      continue;
-    }
-  }
-  throw new Error('Yampi: não foi possível conectar. Verifique o token e tente novamente.');
+  // Usa Google Apps Script como proxy para evitar CORS
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwFjmxYuva_BGv7Ya-yUqschO_stF-8huQ-nBfuG255Jx9X0eV5rheX2KdBDPh9wnl9sQ/exec';
+  
+  const url = `${APPS_SCRIPT_URL}?date_start=${dateStart}&date_end=${dateEnd}`;
+  
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Yampi: erro ao conectar via proxy');
+  
+  const data = await res.json();
+  if (!data.success) throw new Error('Yampi: ' + (data.error || 'erro desconhecido'));
+  
+  return data.orders || [];
 }
 
 // ══════════════════════════════════════════════
@@ -510,8 +488,8 @@ function renderKPIs(fbData, yampiOrders) {
   const totalSpent = totalSpentUSD * USD_TO_BRL;
 
   // Yampi totals — only approved/paid
-  const approvedStatuses = ['approved', 'paid', 'processing', 'shipped', 'delivered'];
-  const approvedOrders = yampiOrders.filter(o => approvedStatuses.includes(o.status?.value || ''));
+  const approvedStatuses = ['Pago', 'Entregue', 'Em transporte', 'approved', 'paid', 'processing', 'shipped', 'delivered'];
+  const approvedOrders = yampiOrders.filter(o => approvedStatuses.includes(o.status || o.status?.value || ''));
   const totalRevenue = approvedOrders.reduce((s, o) => s + parseFloat(o.total || 0), 0);
   const totalOrders = approvedOrders.length;
   const profit = totalRevenue - totalSpent;
@@ -599,10 +577,10 @@ function renderOrders(orders) {
   }
 
   tbody.innerHTML = orders.slice(0, 30).map(o => {
-    const name = o.customer?.data?.name || '—';
-    const utmCampaign = o.utm_campaign || o.tracking_data?.utm_campaign || '—';
+    const name = o.customer || '—';
+    const utmCampaign = o.utm_campaign || '—';
     const total = parseFloat(o.total || 0);
-    const status = o.status?.value || '';
+    const status = o.status || '';
     return `
       <tr>
         <td style="color:var(--muted);font-size:0.76rem">#${o.number || o.id}</td>
