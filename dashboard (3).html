@@ -27,7 +27,6 @@ button {
   border: none;
   cursor: pointer;
 }
-
 </style>
 </head>
 
@@ -39,7 +38,7 @@ button {
 
 <div class="card">
   <h2>💸 Gasto</h2>
-  <div id="spent">-</div>
+  <div id="spent">R$ 0,00</div>
 </div>
 
 <div class="card">
@@ -67,9 +66,6 @@ button {
 // CONFIG
 const SHEET_ID = '1MQoxtYfNbOhF9A2TaqKHC4f-ZiEeMs_8Ob-xOd-lYMQ';
 
-const FB_TOKEN = 'SEU_TOKEN_FACEBOOK';
-const AD_ACCOUNT = 'act_723175113800731';
-
 // ===== YAMPI (PLANILHA)
 async function fetchYampi() {
 
@@ -77,7 +73,10 @@ async function fetchYampi() {
 
   const res = await fetch(url);
   const text = await res.text();
-  const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+
+  const json = JSON.parse(
+    text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1)
+  );
 
   const rows = json.table.rows || [];
 
@@ -89,6 +88,8 @@ async function fetchYampi() {
 
     const c = row.c;
 
+    if (!c) return;
+
     orders.push({
       total: parseFloat(c[3]?.v || 0),
       status: c[4]?.v || ''
@@ -99,42 +100,36 @@ async function fetchYampi() {
   return orders;
 }
 
-// ===== FACEBOOK
-async function fetchFacebook() {
-
-  const url = `https://graph.facebook.com/v20.0/${AD_ACCOUNT}/insights?fields=spend&access_token=${FB_TOKEN}`;
-
-  const res = await fetch(url);
-  const data = await res.json();
-
-  return data.data || [];
-}
-
 // ===== LOAD
 async function loadAll() {
 
-  const fb = await fetchFacebook();
-  const yampi = await fetchYampi();
+  try {
 
-  const spentUSD = fb.reduce((s, c) => s + parseFloat(c.spend || 0), 0);
-  const spent = spentUSD * 5.7;
+    const yampi = await fetchYampi();
 
-  const aprovados = yampi.filter(o =>
-    ['Pago','Entregue','Em transporte'].includes(o.status)
-  );
+    const aprovados = yampi.filter(o =>
+      ['Pago','Entregue','Em transporte'].includes(o.status)
+    );
 
-  const revenue = aprovados.reduce((s, o) => s + o.total, 0);
+    const revenue = aprovados.reduce((s, o) => s + o.total, 0);
 
-  const profit = revenue - spent;
-  const roas = spent > 0 ? revenue / spent : 0;
+    document.getElementById('spent').innerText = 'R$ 0,00';
+    document.getElementById('revenue').innerText = 'R$ ' + revenue.toFixed(2);
+    document.getElementById('orders').innerText = aprovados.length;
+    document.getElementById('profit').innerText = 'R$ ' + revenue.toFixed(2);
+    document.getElementById('roas').innerText = '—';
 
-  document.getElementById('spent').innerText = 'R$ ' + spent.toFixed(2);
-  document.getElementById('revenue').innerText = 'R$ ' + revenue.toFixed(2);
-  document.getElementById('orders').innerText = aprovados.length;
-  document.getElementById('profit').innerText = 'R$ ' + profit.toFixed(2);
-  document.getElementById('roas').innerText = roas.toFixed(2) + 'x';
+  } catch (e) {
+
+    alert('Erro ao carregar dados');
+    console.log(e);
+
+  }
 
 }
+
+// AUTO LOAD
+loadAll();
 
 </script>
 
