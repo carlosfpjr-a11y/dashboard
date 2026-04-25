@@ -4,319 +4,59 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — Facilita Bio</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg:#0a0c0b; --surface:#131714; --card:#181d19; --border:#232a24;
-  --accent:#c6f135; --green:#3cffa0; --red:#ff5c5c;
-  --text:#e4ebe5; --muted:#5a6b5d; --muted2:#3a453c;
-}
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  min-height: 100vh;
-  padding: 40px 24px 80px;
-}
-
-.container { max-width: 860px; margin: 0 auto; }
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 40px;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.logo-area { border-left: 3px solid var(--accent); padding-left: 16px; }
-
-.logo-area h1 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(2.2rem, 5vw, 3.2rem);
-  letter-spacing: 2px;
-  line-height: 1;
-}
-
-.logo-area p {
-  color: var(--muted);
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-top: 4px;
-}
-
-.header-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-}
-
-.date-range {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 0.82rem;
-}
-
-.date-range input[type="date"] {
-  background: transparent;
-  border: none;
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.82rem;
-  outline: none;
-  cursor: pointer;
-}
-
-.date-range input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.6);
-  cursor: pointer;
-}
-
-.date-range span { color: var(--muted); }
-
-#btn-refresh {
-  background: var(--accent);
-  color: #0a0c0b;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.1rem;
-  letter-spacing: 1px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-#btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
-
-#status-bar {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 18px;
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-bottom: 28px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 44px;
-}
-
-.dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--muted2);
-  flex-shrink: 0;
-}
-
-.dot.loading { background: var(--accent); animation: pulse 1s infinite; }
-.dot.ok { background: var(--green); }
-.dot.error { background: var(--red); }
-
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px;
-  margin-bottom: 28px;
-}
-
-.kpi-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px 22px;
-}
-
-.kpi-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-
-.kpi-value {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.9rem;
-  letter-spacing: 0.5px;
-  line-height: 1;
-}
-
-.positive { color: var(--green); }
-.negative { color: var(--red); }
-.accent { color: var(--accent); }
-.neutral { color: var(--text); }
-
-.kpi-sub {
-  font-size: 0.72rem;
-  color: var(--muted);
-  margin-top: 4px;
-}
-
-.roas-card {
-  background: var(--accent);
-  color: #0a0c0b;
-  border-radius: 12px;
-  padding: 22px 28px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 28px;
-}
-
-.roas-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  opacity: 0.65;
-}
-
-.roas-value {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 3rem;
-  letter-spacing: 1px;
-  line-height: 1;
-}
-
-.roas-sub {
-  font-size: 0.78rem;
-  opacity: 0.65;
-  margin-top: 4px;
-}
-
-.section-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.4rem;
-  letter-spacing: 1.5px;
-  color: var(--muted);
-  margin-bottom: 14px;
-  text-transform: uppercase;
-}
-
-.campaigns-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 32px;
-}
-
-.camp-row {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px 20px;
-  display: grid;
-  grid-template-columns: 1fr auto auto auto;
-  gap: 8px 20px;
-  align-items: center;
-}
-
-.camp-name { font-size: 0.88rem; font-weight: 500; }
-
-.camp-status {
-  font-size: 0.68rem;
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-.camp-spent {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.3rem;
-  color: var(--red);
-}
-
-.camp-revenue {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.3rem;
-  color: var(--green);
-}
-
-.camp-roas {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.1rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 4px 10px;
-  text-align: center;
-  min-width: 60px;
-}
-
-.camp-bar-row {
-  grid-column: 1 / -1;
-  height: 3px;
-  background: var(--border);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.camp-bar-fill {
-  height: 100%;
-  border-radius: 2px;
-  background: var(--accent);
-}
-
-.orders-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.orders-table th {
-  text-align: left;
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-}
-
-.orders-table td {
-  padding: 12px 14px;
-  font-size: 0.84rem;
-  border-bottom: 1px solid var(--muted2);
-}
-
-.badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-size: 0.68rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.badge-green { background: rgba(60,255,160,0.12); color: var(--green); }
-.badge-yellow { background: rgba(198,241,53,0.12); color: var(--accent); }
-.badge-red { background: rgba(255,92,92,0.12); color: var(--red); }
-.badge-gray { background: rgba(90,107,93,0.15); color: var(--muted); }
-
-.empty-state {
-  text-align: center;
-  padding: 40px;
-  color: var(--muted);
-  font-size: 0.85rem;
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0c0b;--surface:#131714;--card:#181d19;--border:#232a24;--accent:#c6f135;--green:#3cffa0;--red:#ff5c5c;--text:#e4ebe5;--muted:#5a6b5d;--muted2:#3a453c}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding:40px 24px 80px}
+.container{max-width:860px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px;flex-wrap:wrap;gap:16px}
+.logo-area{border-left:3px solid var(--accent);padding-left:16px}
+.logo-area h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,5vw,3.2rem);letter-spacing:2px;line-height:1}
+.logo-area p{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.date-range{display:flex;gap:8px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:.82rem}
+.date-range input[type=date]{background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.82rem;outline:none;cursor:pointer}
+.date-range span{color:var(--muted)}
+#btn-refresh{background:var(--accent);color:#0a0c0b;border:none;border-radius:8px;padding:10px 20px;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:8px}
+#btn-refresh:disabled{opacity:.5;cursor:not-allowed}
+#status-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:.8rem;color:var(--muted);margin-bottom:28px;display:flex;align-items:center;gap:10px;min-height:44px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted2);flex-shrink:0}
+.dot.loading{background:var(--accent);animation:pulse 1s infinite}
+.dot.ok{background:var(--green)}
+.dot.error{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:28px}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 22px}
+.kpi-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px}
+.kpi-value{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:.5px;line-height:1}
+.positive{color:var(--green)}.negative{color:var(--red)}.accent{color:var(--accent)}.neutral{color:var(--text)}
+.kpi-sub{font-size:.72rem;color:var(--muted);margin-top:4px}
+.roas-card{background:var(--accent);color:#0a0c0b;border-radius:12px;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.roas-label{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;opacity:.65}
+.roas-value{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:1px;line-height:1}
+.roas-sub{font-size:.78rem;opacity:.65;margin-top:4px}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1.5px;color:var(--muted);margin-bottom:14px;text-transform:uppercase}
+.campaigns-list{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+.camp-row{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:grid;grid-template-columns:1fr auto auto auto;gap:8px 20px;align-items:center}
+.camp-name{font-size:.88rem;font-weight:500}
+.camp-status{font-size:.68rem;color:var(--muted);margin-top:2px}
+.camp-spent{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--red)}
+.camp-revenue{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--green)}
+.camp-roas{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 10px;text-align:center;min-width:60px}
+.camp-bar-row{grid-column:1/-1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.camp-bar-fill{height:100%;border-radius:2px;background:var(--accent)}
+.orders-table{width:100%;border-collapse:collapse}
+.orders-table th{text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:10px 14px;border-bottom:1px solid var(--border)}
+.orders-table td{padding:12px 14px;font-size:.84rem;border-bottom:1px solid var(--muted2)}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.68rem;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.badge-green{background:rgba(60,255,160,.12);color:var(--green)}
+.badge-yellow{background:rgba(198,241,53,.12);color:var(--accent)}
+.badge-red{background:rgba(255,92,92,.12);color:var(--red)}
+.badge-gray{background:rgba(90,107,93,.15);color:var(--muted)}
+.empty-state{text-align:center;padding:40px;color:var(--muted);font-size:.85rem}
 </style>
 </head>
 
@@ -335,7 +75,6 @@ header {
       <span>→</span>
       <input type="date" id="date-end">
     </div>
-
     <button id="btn-refresh" onclick="loadAll()">
       <span id="btn-icon">↻</span> ATUALIZAR
     </button>
@@ -409,7 +148,7 @@ header {
 <script>
 const CONFIG = {
   facebook: {
-    token: 'EAAOCMdh5FYMBRbNuWmxOZCkuzFGmnmiAoieV9ptTle1pRCWELiGe3cv9jb9xpD57E62DPeo04hnMlfamUG1vXQyfq0NdjtyudiObxZCVSOgS1nZC1Vp0GptbTtdpPpwZAdaxMGa2YxpdmEe0ZC32If1gjrSn0R1WkwvFLPlAK6DZCbzbGmAatW3AfZBC4XaXuJ19ZBPa',
+    token: 'COLE_AQUI_SEU_TOKEN_FACEBOOK',
     adAccountId: 'act_723175113800731'
   },
   sheet: {
@@ -419,148 +158,131 @@ const CONFIG = {
 
 let USD_TO_BRL = 5.70;
 
-const fmt = v => isNaN(v) ? '—' : Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmt = v => isNaN(v) ? '—' : Number(v).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 const fmtNum = v => isNaN(v) ? '—' : Number(v).toLocaleString('pt-BR');
 
-function escapeHtml(text) {
+function escapeHtml(text){
   return String(text || '').replace(/[&<>"']/g, m => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;'
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;'
   }[m]));
 }
 
-function normalizeText(text) {
+function normalizeText(text){
   return String(text || '')
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/—/g, '-')
-    .replace(/\s+/g, ' ')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/—/g,'-')
+    .replace(/\s+/g,' ')
     .trim();
 }
 
-function setStatus(msg, type = '') {
+function setStatus(msg,type=''){
   document.getElementById('status-text').textContent = msg;
   const dot = document.getElementById('status-dot');
   dot.className = 'dot' + (type ? ' ' + type : '');
 }
 
-function setDates() {
+function setDates(){
   const today = new Date();
   const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-
   document.getElementById('date-end').value = today.toISOString().split('T')[0];
   document.getElementById('date-start').value = firstDay.toISOString().split('T')[0];
 }
 
-async function fetchExchangeRate() {
-  try {
+async function fetchExchangeRate(){
+  try{
     const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
     const data = await res.json();
-
-    if (data.rates?.BRL) {
-      USD_TO_BRL = data.rates.BRL;
-    }
-  } catch (e) {
+    if(data.rates && data.rates.BRL) USD_TO_BRL = data.rates.BRL;
+  }catch(e){
     console.warn('Câmbio indisponível. Usando fallback:', USD_TO_BRL);
   }
 }
 
-async function fetchFacebook(dateStart, dateEnd) {
-  const fields = 'campaign_name,spend,impressions,clicks,actions';
-  const timeRange = encodeURIComponent(JSON.stringify({
-    since: dateStart,
-    until: dateEnd
-  }));
+async function fetchFacebook(dateStart,dateEnd){
+  if (!CONFIG.facebook.token || CONFIG.facebook.token === 'COLE_AQUI_SEU_TOKEN_FACEBOOK') {
+    throw new Error('Facebook: token não configurado');
+  }
 
+  const fields = 'campaign_name,spend,impressions,clicks,actions';
+  const timeRange = encodeURIComponent(JSON.stringify({ since:dateStart, until:dateEnd }));
   const url = `https://graph.facebook.com/v20.0/${CONFIG.facebook.adAccountId}/insights?fields=${fields}&time_range=${timeRange}&level=campaign&limit=200&access_token=${CONFIG.facebook.token}`;
 
   const res = await fetch(url);
   const data = await res.json();
 
-  if (data.error) throw new Error('Facebook: ' + data.error.message);
-
+  if(data.error) throw new Error('Facebook: ' + data.error.message);
   return data.data || [];
 }
 
-function parseGoogleDate(value) {
-  if (!value) return null;
+function parseGoogleDate(value){
+  if(!value) return null;
 
   const raw = String(value).trim();
 
-  if (raw.includes('Date(')) {
-    const parts = raw
-      .replace('Date(', '')
-      .replace(')', '')
-      .split(',')
-      .map(Number);
-
+  if(raw.includes('Date(')){
+    const parts = raw.replace('Date(','').replace(')','').split(',').map(Number);
     return new Date(parts[0], parts[1], parts[2]);
   }
 
-  if (raw.includes('/')) {
+  if(raw.includes('/')){
     const [dia, mes, ano] = raw.split(' ')[0].split('/').map(Number);
     return new Date(ano, mes - 1, dia);
   }
 
-  if (raw.includes('-')) {
-    return new Date(raw.substring(0, 10) + 'T00:00:00');
+  if(raw.includes('-')){
+    return new Date(raw.substring(0,10) + 'T00:00:00');
   }
 
   return null;
 }
 
-async function fetchYampi(dateStart, dateEnd) {
+async function fetchYampi(dateStart,dateEnd){
   const url = `https://docs.google.com/spreadsheets/d/${CONFIG.sheet.id}/gviz/tq?tqx=out:json`;
 
   const res = await fetch(url);
-  if (!res.ok) throw new Error('Planilha: erro ao carregar dados');
+  if(!res.ok) throw new Error('Planilha: erro ao carregar dados');
 
   const text = await res.text();
   const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
 
-  const rows = json.table?.rows || [];
+  const rows = json.table && json.table.rows ? json.table.rows : [];
   const start = new Date(dateStart + 'T00:00:00');
   const end = new Date(dateEnd + 'T23:59:59');
   const orders = [];
 
-  rows.forEach((row, i) => {
-    if (i === 0) return;
+  rows.forEach((row,i)=>{
+    if(i === 0) return;
 
     const cols = row.c || [];
-    if (!cols[0]?.v) return;
+    if(!cols[0] || !cols[0].v) return;
 
-    const rawDate = cols[1]?.f || cols[1]?.v || '';
+    const rawDate = (cols[1] && (cols[1].f || cols[1].v)) ? (cols[1].f || cols[1].v) : '';
     const orderDate = parseGoogleDate(rawDate);
 
-    if (!orderDate || isNaN(orderDate)) {
-      // Se não conseguir ler a data, deixa entrar para não perder venda
-    } else {
-      if (orderDate < start || orderDate > end) return;
+    if(orderDate && !isNaN(orderDate)){
+      if(orderDate < start || orderDate > end) return;
     }
 
     orders.push({
-      id: String(cols[0]?.v || ''),
+      id: String((cols[0] && cols[0].v) || ''),
       created_at: rawDate,
-      customer: String(cols[2]?.v || ''),
-      total: parseFloat(String(cols[3]?.v || '0').replace(',', '.')) || 0,
-      status: String(cols[4]?.v || ''),
-      utm_campaign: String(cols[5]?.v || ''),
-      utm_source: String(cols[6]?.v || ''),
-      payment: String(cols[7]?.v || '')
+      customer: String((cols[2] && cols[2].v) || ''),
+      total: parseFloat(String((cols[3] && cols[3].v) || '0').replace(',','.')) || 0,
+      status: String((cols[4] && cols[4].v) || ''),
+      utm_campaign: String((cols[5] && cols[5].v) || ''),
+      utm_source: String((cols[6] && cols[6].v) || ''),
+      payment: String((cols[7] && cols[7].v) || '')
     });
   });
 
   return orders;
 }
 
-function isApprovedStatus(status) {
+function isApprovedStatus(status){
   const s = normalizeText(status);
-
-  const aprovados = [
+  return [
     'pago',
     'pagamento aprovado',
     'aprovado',
@@ -572,20 +294,17 @@ function isApprovedStatus(status) {
     'approved',
     'shipped',
     'delivered'
-  ];
-
-  return aprovados.includes(s);
+  ].includes(s);
 }
 
-function buildRevenueByCampaign(yampiOrders) {
+function buildRevenueByCampaign(yampiOrders){
   const revenueMap = {};
   const ordersMap = {};
 
   yampiOrders
     .filter(o => isApprovedStatus(o.status))
-    .forEach(o => {
+    .forEach(o=>{
       const key = normalizeText(o.utm_campaign || 'Sem campanha');
-
       revenueMap[key] = (revenueMap[key] || 0) + parseFloat(o.total || 0);
       ordersMap[key] = (ordersMap[key] || 0) + 1;
     });
@@ -593,37 +312,31 @@ function buildRevenueByCampaign(yampiOrders) {
   return { revenueMap, ordersMap };
 }
 
-function findRevenueForCampaign(campaignName, revenueMap, ordersMap) {
+function findRevenueForCampaign(campaignName,revenueMap,ordersMap){
   const key = normalizeText(campaignName);
 
-  if (revenueMap[key] !== undefined) {
-    return { revenue: revenueMap[key], orders: ordersMap[key] || 0 };
+  if(revenueMap[key] !== undefined){
+    return { revenue:revenueMap[key], orders:ordersMap[key] || 0 };
   }
 
   let bestKey = null;
-
-  Object.keys(revenueMap).forEach(k => {
-    if (!bestKey && (k.includes(key) || key.includes(k))) {
-      bestKey = k;
-    }
+  Object.keys(revenueMap).forEach(k=>{
+    if(!bestKey && (k.includes(key) || key.includes(k))) bestKey = k;
   });
 
-  if (bestKey) {
-    return {
-      revenue: revenueMap[bestKey],
-      orders: ordersMap[bestKey] || 0
-    };
+  if(bestKey){
+    return { revenue:revenueMap[bestKey], orders:ordersMap[bestKey] || 0 };
   }
 
-  return { revenue: 0, orders: 0 };
+  return { revenue:0, orders:0 };
 }
 
-function renderKPIs(fbData, yampiOrders) {
-  const totalSpentUSD = fbData.reduce((s, c) => s + parseFloat(c.spend || 0), 0);
+function renderKPIs(fbData,yampiOrders){
+  const totalSpentUSD = fbData.reduce((s,c)=>s + parseFloat(c.spend || 0),0);
   const totalSpent = totalSpentUSD * USD_TO_BRL;
 
-  const approvedOrders = yampiOrders.filter(o => isApprovedStatus(o.status));
-  const totalRevenue = approvedOrders.reduce((s, o) => s + parseFloat(o.total || 0), 0);
+  const approvedOrders = yampiOrders.filter(o=>isApprovedStatus(o.status));
+  const totalRevenue = approvedOrders.reduce((s,o)=>s + parseFloat(o.total || 0),0);
   const totalOrders = approvedOrders.length;
   const profit = totalRevenue - totalSpent;
   const roas = totalSpent > 0 ? totalRevenue / totalSpent : 0;
@@ -643,21 +356,21 @@ function renderKPIs(fbData, yampiOrders) {
     : 'Retorno sobre investimento em anúncios';
 }
 
-function renderCampaigns(fbData, yampiOrders) {
+function renderCampaigns(fbData,yampiOrders){
   const container = document.getElementById('campaigns-list');
   const { revenueMap, ordersMap } = buildRevenueByCampaign(yampiOrders);
 
-  if (!fbData.length) {
+  if(!fbData.length){
     container.innerHTML = '<div class="empty-state">Nenhuma campanha encontrada no período.</div>';
     return;
   }
 
-  const maxSpendBRL = Math.max(...fbData.map(c => parseFloat(c.spend || 0) * USD_TO_BRL), 1);
+  const maxSpendBRL = Math.max(...fbData.map(c=>parseFloat(c.spend || 0) * USD_TO_BRL), 1);
   container.innerHTML = '';
 
   fbData
-    .sort((a, b) => parseFloat(b.spend || 0) - parseFloat(a.spend || 0))
-    .forEach((c, i) => {
+    .sort((a,b)=>parseFloat(b.spend || 0) - parseFloat(a.spend || 0))
+    .forEach(c=>{
       const spent = parseFloat(c.spend || 0) * USD_TO_BRL;
       const impressions = parseInt(c.impressions || 0);
       const clicks = parseInt(c.clicks || 0);
@@ -667,12 +380,10 @@ function renderCampaigns(fbData, yampiOrders) {
       const revenue = found.revenue;
       const orders = found.orders;
       const roas = spent > 0 ? revenue / spent : 0;
-
       const roasColor = roas >= 2 ? 'var(--green)' : (roas > 0 ? 'var(--accent)' : 'var(--muted)');
 
       const div = document.createElement('div');
       div.className = 'camp-row';
-
       div.innerHTML = `
         <div class="camp-name">
           ${escapeHtml(c.campaign_name)}
@@ -683,38 +394,37 @@ function renderCampaigns(fbData, yampiOrders) {
         <div class="camp-roas" style="color:${roasColor}">${roas > 0 ? roas.toFixed(2) + 'x' : '—'}</div>
         <div class="camp-bar-row"><div class="camp-bar-fill" style="width:${pct}%"></div></div>
       `;
-
       container.appendChild(div);
     });
 }
 
-function statusBadge(status) {
+function statusBadge(status){
   const s = normalizeText(status);
 
-  if (['pago', 'pagamento aprovado', 'aprovado', 'pedido aprovado', 'paid', 'approved'].includes(s)) {
+  if(['pago','pagamento aprovado','aprovado','pedido aprovado','paid','approved'].includes(s)){
     return `<span class="badge badge-green">${escapeHtml(status)}</span>`;
   }
 
-  if (['entregue', 'em transporte', 'processing', 'shipped', 'delivered'].includes(s)) {
+  if(['entregue','em transporte','processing','shipped','delivered'].includes(s)){
     return `<span class="badge badge-yellow">${escapeHtml(status)}</span>`;
   }
 
-  if (['cancelado', 'reembolsado', 'troca/devolucao', 'pagamento recusado'].includes(s)) {
+  if(['cancelado','reembolsado','troca/devolucao','pagamento recusado'].includes(s)){
     return `<span class="badge badge-red">${escapeHtml(status)}</span>`;
   }
 
   return `<span class="badge badge-gray">${escapeHtml(status || '—')}</span>`;
 }
 
-function renderOrders(orders) {
+function renderOrders(orders){
   const tbody = document.getElementById('orders-body');
 
-  if (!orders.length) {
+  if(!orders.length){
     tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state">Nenhum pedido encontrado no período.</div></td></tr>';
     return;
   }
 
-  tbody.innerHTML = orders.slice(0, 30).map(o => `
+  tbody.innerHTML = orders.slice(0,30).map(o=>`
     <tr>
       <td style="color:var(--muted);font-size:0.76rem">#${escapeHtml(o.id)}</td>
       <td>${escapeHtml(o.customer || '—')}</td>
@@ -725,57 +435,59 @@ function renderOrders(orders) {
   `).join('');
 }
 
-async function loadAll() {
+async function loadAll(){
   const btn = document.getElementById('btn-refresh');
   const icon = document.getElementById('btn-icon');
   const dateStart = document.getElementById('date-start').value;
   const dateEnd = document.getElementById('date-end').value;
 
-  if (!dateStart || !dateEnd) {
-    setStatus('Selecione o período antes de atualizar.', 'error');
+  if(!dateStart || !dateEnd){
+    setStatus('Selecione o período antes de atualizar.','error');
     return;
   }
 
   btn.disabled = true;
-  icon.style.animation = 'spin 0.8s linear infinite';
+  icon.style.animation = 'spin .8s linear infinite';
 
   let fbData = [];
   let yampiOrders = [];
   const errors = [];
 
-  try {
-    setStatus('Buscando câmbio do dia...', 'loading');
+  try{
+    setStatus('Buscando câmbio do dia...','loading');
     await fetchExchangeRate();
-  } catch (e) {
+  }catch(e){
     errors.push(e.message);
   }
 
-  try {
-    setStatus('Buscando dados do Facebook Ads...', 'loading');
-    fbData = await fetchFacebook(dateStart, dateEnd);
-  } catch (e) {
+  try{
+    setStatus('Buscando dados do Facebook Ads...','loading');
+    fbData = await fetchFacebook(dateStart,dateEnd);
+  }catch(e){
     errors.push(e.message);
   }
 
-  try {
-    setStatus('Buscando pedidos Yampi pela planilha...', 'loading');
-    yampiOrders = await fetchYampi(dateStart, dateEnd);
-  } catch (e) {
+  try{
+    setStatus('Buscando pedidos Yampi pela planilha...','loading');
+    yampiOrders = await fetchYampi(dateStart,dateEnd);
+  }catch(e){
     errors.push(e.message);
   }
 
-  renderKPIs(fbData, yampiOrders);
-  renderCampaigns(fbData, yampiOrders);
+  renderKPIs(fbData,yampiOrders);
+  renderCampaigns(fbData,yampiOrders);
   renderOrders(yampiOrders);
 
   btn.disabled = false;
   icon.style.animation = '';
 
-  if (errors.length) {
-    setStatus('⚠️ ' + errors.join(' | '), 'error');
-  } else {
+  const approvedCount = yampiOrders.filter(o=>isApprovedStatus(o.status)).length;
+
+  if(errors.length){
+    setStatus(`⚠️ ${errors.join(' | ')} · Pedidos lidos: ${yampiOrders.length} · Aprovados: ${approvedCount}`,'error');
+  }else{
     const now = new Date().toLocaleTimeString('pt-BR');
-    setStatus(`✓ Dados atualizados às ${now} · Câmbio: R$ ${USD_TO_BRL.toFixed(2)}/USD · ${dateStart} até ${dateEnd}`, 'ok');
+    setStatus(`✓ Dados atualizados às ${now} · Pedidos lidos: ${yampiOrders.length} · Aprovados: ${approvedCount} · ${dateStart} até ${dateEnd}`,'ok');
   }
 }
 
